@@ -18,7 +18,7 @@ export const profil = {
   // Chemin du CV PUBLIC (sans numéro de téléphone), à déposer dans /public.
   // Tant que la valeur est null, les boutons « CV » sont masqués.
   // Exemple quand le fichier sera prêt : '/cv-aly-keita.pdf'
-  cvUrl: null,
+  cvUrl: '/cv-aly-keita.pdf',
 }
 
 // Chiffre « EN DIRECT » lu sur Quai Nord.
