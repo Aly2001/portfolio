@@ -415,13 +415,11 @@ dl, dd { margin: 0; }
 .pied p { padding-top: 22px; padding-bottom: 22px; font-family: var(--police-tableau); font-size: 12px; color: var(--gris-bleu); text-transform: uppercase; }
 
 /* ─────────────────────────────────────────────────────────────
-   9. L'ASSISTANT (bouton flottant)
+   9. L'ASSISTANT : le bouton flottant et le « guichet »
    ───────────────────────────────────────────────────────────── */
-.assistant {
-  position: fixed; right: max(16px, env(safe-area-inset-right, 0px)); bottom: calc(16px + env(safe-area-inset-bottom, 0px));
-  z-index: 30; display: flex; flex-direction: column; align-items: flex-end; gap: 12px;
-}
 .assistant__bouton {
+  position: fixed; z-index: 30;
+  right: max(16px, env(safe-area-inset-right, 0px)); bottom: calc(16px + env(safe-area-inset-bottom, 0px));
   display: inline-flex; align-items: center; gap: 12px; min-height: 58px; padding: 0 22px 0 8px;
   font: inherit; font-size: 16px; font-weight: 700; background: #fff; color: var(--nuit); border: 0; border-radius: 999px;
   box-shadow: 0 0 0 3px var(--jaune), 0 12px 28px rgba(0, 0, 0, 0.35); cursor: pointer;
@@ -429,15 +427,83 @@ dl, dd { margin: 0; }
 .assistant__rond { width: 44px; height: 44px; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; background: var(--nuit); color: var(--jaune); }
 .assistant__textes { display: flex; flex-direction: column; align-items: flex-start; line-height: 1.1; }
 .assistant__petit { font-family: var(--police-tableau); font-size: 11px; color: var(--bleu-lien); text-transform: uppercase; }
-.assistant__panneau {
-  width: min(360px, calc(100vw - 32px)); padding: 20px; border-radius: 18px; background: #fff; color: var(--texte);
-  box-shadow: 0 0 0 3px var(--jaune), 0 20px 40px rgba(0, 0, 0, 0.3); display: flex; flex-direction: column; gap: 12px; font-size: 15px;
+.assistant__voile { position: fixed; inset: 0; z-index: 39; background: rgba(6, 11, 24, 0.6); }
+body.assistant-ouvert { overflow: hidden; }
+
+.guichet {
+  position: fixed; z-index: 40; right: 24px; top: 24px; bottom: 24px; width: min(440px, calc(100vw - 48px));
+  display: flex; flex-direction: column; border-radius: 20px; overflow: hidden; background: var(--fond);
+  box-shadow: 0 0 0 3px var(--jaune), 0 30px 60px rgba(0, 0, 0, 0.45);
 }
-.assistant__panneau:focus { outline: none; }
-.assistant__tete { display: flex; align-items: center; justify-content: space-between; }
-.assistant__tete p { font-family: var(--police-tableau); font-size: 13px; font-weight: 700; text-transform: uppercase; color: var(--bleu-lien); }
-.assistant__tete button { width: 44px; height: 44px; display: inline-flex; align-items: center; justify-content: center; border: 0; background: transparent; color: var(--nuit); cursor: pointer; border-radius: 10px; }
-.assistant__panneau .bouton { justify-content: flex-start; overflow-wrap: anywhere; font-size: 15px; }
+.guichet:focus { outline: none; }
+.guichet__tete {
+  flex: none; display: flex; align-items: center; gap: 12px; padding: 14px 16px;
+  padding-top: calc(14px + env(safe-area-inset-top, 0px));
+  background: var(--nuit); color: #fff; border-bottom: 3px solid var(--jaune);
+}
+.guichet__tete img { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; box-shadow: 0 0 0 3px var(--jaune); }
+.guichet__titres { flex: 1; min-width: 0; }
+.guichet__petit { font-family: var(--police-tableau); font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--jaune); }
+.guichet__titres h2 { margin-top: 2px; font-family: var(--police-titre); font-weight: 700; font-size: 22px; line-height: 1; }
+.guichet__sous { margin-top: 2px; font-size: 12px; color: var(--clair-doux); }
+.guichet__fermer {
+  width: 44px; height: 44px; flex: none; display: inline-flex; align-items: center; justify-content: center;
+  border: 1.5px solid #3a4a6b; border-radius: 10px; background: transparent; color: #fff; cursor: pointer;
+}
+.guichet__fil { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 16px 14px; display: flex; flex-direction: column; gap: 14px; }
+
+.annonce { align-self: flex-start; max-width: 88%; display: flex; flex-direction: column; gap: 8px; }
+.annonce__libelle { font-family: var(--police-tableau); font-size: 10px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--bleu-lien); }
+.annonce__bulle {
+  padding: 12px 14px; border-radius: 4px 16px 16px 16px; background: #fff; box-shadow: 0 2px 0 var(--filet-papier);
+  font-size: 15px; line-height: 1.5; overflow-wrap: anywhere;
+}
+.annonce__email {
+  display: inline-flex; align-items: center; gap: 8px; min-height: 44px; margin-top: 8px; padding: 0 14px;
+  border-radius: 999px; background: var(--nuit); color: #fff; font-weight: 700; font-size: 14px; text-decoration: none;
+}
+.annonce__email:hover { color: #fff; background: var(--nuit-2); }
+.annonce__sources { display: flex; flex-direction: column; gap: 6px; }
+.annonce__sources .annonce__libelle { color: var(--texte-discret); }
+.annonce__billets { display: flex; flex-wrap: wrap; gap: 6px; }
+.billet-source {
+  display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 4px 10px 4px 4px; border-radius: 8px;
+  background: var(--papier); box-shadow: inset 0 0 0 1px var(--bord-papier); color: var(--nuit); text-decoration: none;
+}
+.billet-source:hover { color: var(--nuit); box-shadow: inset 0 0 0 2px var(--nuit); }
+.billet-source__icone { width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; border-radius: 6px; background: var(--jaune); }
+.billet-source__textes { display: flex; flex-direction: column; line-height: 1.1; font-size: 13px; font-weight: 700; }
+.billet-source__sous { font-family: var(--police-tableau); font-size: 10px; font-weight: 500; color: var(--brun); }
+.question-visiteur {
+  align-self: flex-end; max-width: 82%; padding: 10px 14px; border-radius: 16px 4px 16px 16px;
+  background: var(--nuit); color: #fff; font-size: 15px; line-height: 1.45; overflow-wrap: anywhere;
+}
+.suggestions { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; }
+.suggestions button {
+  min-height: 44px; padding: 0 16px; border-radius: 999px; border: 1.5px solid var(--nuit); background: transparent;
+  font: inherit; font-size: 14px; font-weight: 600; color: var(--nuit); text-align: left; cursor: pointer;
+}
+.suggestions button:hover { background: var(--nuit); color: #fff; }
+.annonce__attente { display: inline-flex; align-items: center; gap: 10px; font-family: var(--police-tableau); font-size: 12px; color: var(--texte-discret); }
+.annonce__attente .voyant { background: var(--jaune); box-shadow: 0 0 0 4px rgba(242, 194, 48, 0.25); animation: respire 1.2s ease-in-out infinite; }
+@keyframes respire { 50% { opacity: 0.35; } }
+
+.guichet__pied {
+  flex: none; padding: 12px 14px 14px; padding-bottom: calc(14px + env(safe-area-inset-bottom, 0px));
+  background: #fff; border-top: 1px solid var(--filet-papier); display: flex; flex-direction: column; gap: 8px;
+}
+.guichet__saisie { display: flex; gap: 8px; align-items: center; }
+.guichet__saisie input {
+  flex: 1; min-width: 0; min-height: 48px; padding: 0 14px; border-radius: 999px; border: 1.5px solid var(--bord-papier);
+  background: #fff; font: inherit; font-size: 16px; color: var(--nuit);
+}
+.guichet__saisie input:disabled { background: var(--fond); color: var(--texte-discret); }
+.guichet__saisie button {
+  width: 48px; height: 48px; flex: none; display: inline-flex; align-items: center; justify-content: center;
+  border: 0; border-radius: 50%; background: var(--nuit); color: var(--jaune); cursor: pointer;
+}
+.guichet__saisie button:disabled { background: var(--clair-doux); color: var(--texte-discret); cursor: default; }
+.guichet__note { font-size: 12px; line-height: 1.4; color: var(--texte-discret); }
 
 /* ─────────────────────────────────────────────────────────────
    10. LE TÉLÉPHONE : on réorganise, on ne rétrécit pas
@@ -522,6 +588,8 @@ dl, dd { margin: 0; }
   .lignes-comp h3 { font-size: 23px; }
 
   .assistant__bouton { min-height: 54px; padding-right: 16px; font-size: 15px; }
+  .guichet { inset: 0; width: auto; border-radius: 0; box-shadow: none; }
+  .assistant__voile { display: none; }
   .assistant__rond { width: 40px; height: 40px; }
   main { padding-bottom: 72px; }
 }

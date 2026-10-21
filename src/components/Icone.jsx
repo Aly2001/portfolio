@@ -7,6 +7,8 @@ const TRACES = {
   fleche: 'M5 12h14M13 6l6 6-6 6',
   menu: 'M4 7h16M4 12h16M4 17h16',
   fermer: 'M6 6l12 12M18 6L6 18',
+  envoyer: 'M4 12l16-8-6 16-3-7z',
+  billet: 'M4 7h16v4a2 2 0 0 0 0 4v4H4v-4a2 2 0 0 0 0-4z',
 }
 
 export default function Icone({ nom, taille = 20 }) {

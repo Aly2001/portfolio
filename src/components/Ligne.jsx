@@ -17,7 +17,7 @@ export default function Ligne() {
         </div>
         <ol className="gares">
           {parcours.map((g) => (
-            <li key={g.annee} className="gare">
+            <li key={g.id} id={`gare-${g.id}`} className="gare">
               <span className="gare__point" aria-hidden="true" />
               <p className="gare__annee">{g.annee}</p>
               <h3 className="gare__lieu">{g.lieu} <span className="gare__pays">{g.pays}</span></h3>

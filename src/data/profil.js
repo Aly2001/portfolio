@@ -14,6 +14,7 @@ export const profil = {
   email: 'alykeita295@gmail.com',
   linkedin: 'https://www.linkedin.com/in/aly-keita-306703340/',
   github: 'https://github.com/Aly2001',
+  mobilite: 'Mobilité : France entière',
 
   // Chemin du CV PUBLIC (sans numéro de téléphone), à déposer dans /public.
   // Tant que la valeur est null, les boutons « CV » sont masqués.
@@ -84,6 +85,9 @@ export const projets = [
       },
     ],
     outils: ['Python', 'Pandas', 'SQLite', 'React', 'Vite', 'FastAPI', 'Docker', 'Google Cloud', 'Firebase', 'Gemini', 'Vitest', 'Pytest'],
+    // Lu seulement par l'assistant (pas affiché sur le site) : détails en plus.
+    complement:
+      "Nora est l'assistante IA de Quai Nord (Gemini, API FastAPI sur Cloud Run). Elle aide à prendre le bus, le tram ou le métro depuis la gare dans 6 villes. Son code vérifie chaque réponse : les adresses et les lignes inventées sont bloquées, et des quotas protègent le service. 65 000 passages de trains ont été analysés ; le modèle de prédiction est en cours et arrive vers mi-novembre.",
   },
   {
     id: 'iot',
@@ -157,8 +161,9 @@ export const projets = [
 ]
 
 export const parcours = [
-  { annee: '2021', lieu: 'Kéniéba', pays: 'Mali', titre: 'Baccalauréat scientifique', detail: 'Lycée LKBA' },
+  { id: 'kenieba', annee: '2021', lieu: 'Kéniéba', pays: 'Mali', titre: 'Baccalauréat scientifique', detail: 'Lycée LKBA' },
   {
+    id: 'meknes',
     annee: '2022 – 2024',
     lieu: 'Meknès',
     pays: 'Maroc',
@@ -166,6 +171,7 @@ export const parcours = [
     detail: 'Faculté des Sciences Moulay Ismail',
   },
   {
+    id: 'bank-al-maghreb',
     annee: 'Été 2024',
     lieu: 'Bank Al-Maghreb',
     pays: 'Meknès',
@@ -173,6 +179,7 @@ export const parcours = [
     detail: 'Modèle de risque client, SQL et Python, tableaux de bord Power BI',
   },
   {
+    id: 'calais',
     annee: '2025 – 2027',
     lieu: 'Calais',
     pays: 'France',

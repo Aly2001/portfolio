@@ -1,0 +1,272 @@
+[
+  {
+    "id": "profil",
+    "source": {
+      "libelle": "Présentation",
+      "sous": "ACCUEIL",
+      "ancre": "#hall"
+    },
+    "texte": "Aly Keita est Data Scientist & Développeur IA. Je construis des outils qui partent de vraies données et arrivent jusqu'aux utilisateurs. Il est étudiant en Master 2 Ingénierie des Systèmes Complexes à l'EILCO (Calais). Domaines : data analyse, data science, data engineering, machine learning et IA générative.",
+    "empreinte": "f66b0b41bcec2e09"
+  },
+  {
+    "id": "disponibilite",
+    "source": {
+      "libelle": "Me contacter",
+      "sous": "CONTACT",
+      "ancre": "#contact"
+    },
+    "texte": "Aly Keita est ouvert aux opportunités : stage, projet data ou collaboration. Mobilité : France entière. Pour en discuter, le plus simple est de lui écrire à alykeita295@gmail.com.",
+    "empreinte": "dfc08742e672c448"
+  },
+  {
+    "id": "contact",
+    "source": {
+      "libelle": "Me contacter",
+      "sous": "CONTACT",
+      "ancre": "#contact"
+    },
+    "texte": "Pour contacter Aly Keita : e-mail alykeita295@gmail.com, LinkedIn https://www.linkedin.com/in/aly-keita-306703340/, GitHub https://github.com/Aly2001. Son CV est téléchargeable sur le site.",
+    "empreinte": "d9498cdff1946826"
+  },
+  {
+    "id": "projet-quai-nord",
+    "source": {
+      "libelle": "Quai Nord",
+      "sous": "BILLET 1",
+      "ancre": "#billet-quai-nord"
+    },
+    "texte": "Le projet Quai Nord : Prévoir le retard d'un TER des Hauts-de-France avant de partir. État : en ligne. Site en ligne : https://quai-nord.web.app. Code : https://github.com/Aly2001/quai-nord.",
+    "empreinte": "3b9cb6548eecd8f3"
+  },
+  {
+    "id": "projet-quai-nord-demarche",
+    "source": {
+      "libelle": "Quai Nord",
+      "sous": "BILLET 1",
+      "ancre": "#billet-quai-nord"
+    },
+    "texte": "Le projet Quai Nord, la démarche. Le problème : Les applications disent si un train EST en retard, jamais s'il RISQUE de l'être, la veille, pour choisir le bon. Les données : Les retards en temps réel de la SNCF, collectés toutes les 5 minutes sur une VM Google Cloud, plus les horaires et la météo. La méthode : Nettoyage (TER seulement, prévisions écartées), facteurs du retard, lissage bayésien, puis un modèle évalué sur des semaines jamais vues. Le résultat : Un site en ligne, indexé par Google, et Nora, une IA dont le code vérifie chaque réponse. Le modèle de prédiction arrive mi-novembre. Ce que j'ai appris : Ne jamais croire le premier graphique ; une IA peut inventer, le code doit vérifier.",
+    "empreinte": "408d32eaebd9eb86"
+  },
+  {
+    "id": "projet-quai-nord-complement",
+    "source": {
+      "libelle": "Quai Nord",
+      "sous": "BILLET 1",
+      "ancre": "#billet-quai-nord"
+    },
+    "texte": "Le projet Quai Nord, en détail. Nora est l'assistante IA de Quai Nord (Gemini, API FastAPI sur Cloud Run). Elle aide à prendre le bus, le tram ou le métro depuis la gare dans 6 villes. Son code vérifie chaque réponse : les adresses et les lignes inventées sont bloquées, et des quotas protègent le service. 65 000 passages de trains ont été analysés ; le modèle de prédiction est en cours et arrive vers mi-novembre.",
+    "empreinte": "a85296d9d9dfbcd0"
+  },
+  {
+    "id": "projet-quai-nord-outils",
+    "source": {
+      "libelle": "Quai Nord",
+      "sous": "BILLET 1",
+      "ancre": "#billet-quai-nord"
+    },
+    "texte": "Le projet Quai Nord, les outils : Python, Pandas, SQLite, React, Vite, FastAPI, Docker, Google Cloud, Firebase, Gemini, Vitest, Pytest. Chiffres : 5 min une collecte en continu, 65 000 passages analysés, 6 villes bus, tram et métro avec Nora.",
+    "empreinte": "18f20c4afbcb21b7"
+  },
+  {
+    "id": "projet-iot",
+    "source": {
+      "libelle": "Maintenance prédictive IoT",
+      "sous": "BILLET 2",
+      "ancre": "#billet-iot"
+    },
+    "texte": "Le projet Maintenance prédictive IoT (EILCO · 2026 – 2027) : Un capteur ESP32 écoute les vibrations d'une machine ; un modèle repère les défauts, suivis en temps réel sur Firebase. État : terminé.",
+    "empreinte": "4a45a8cc49b2fb68"
+  },
+  {
+    "id": "projet-iot-outils",
+    "source": {
+      "libelle": "Maintenance prédictive IoT",
+      "sous": "BILLET 2",
+      "ancre": "#billet-iot"
+    },
+    "texte": "Le projet Maintenance prédictive IoT, les outils : ESP32, Python, Machine learning, Firebase.",
+    "empreinte": "359aacd968453b71"
+  },
+  {
+    "id": "projet-agent-rag",
+    "source": {
+      "libelle": "Agent conversationnel LLM + RAG",
+      "sous": "BILLET 3",
+      "ancre": "#billet-agent-rag"
+    },
+    "texte": "Le projet Agent conversationnel LLM + RAG (Projet personnel · 2026) : Un agent qui répond aux clients d'un hôtel en cherchant la réponse dans les documents de l'établissement. État : terminé.",
+    "empreinte": "3c2d300d1570b99a"
+  },
+  {
+    "id": "projet-agent-rag-outils",
+    "source": {
+      "libelle": "Agent conversationnel LLM + RAG",
+      "sous": "BILLET 3",
+      "ancre": "#billet-agent-rag"
+    },
+    "texte": "Le projet Agent conversationnel LLM + RAG, les outils : LLM, RAG, Python.",
+    "empreinte": "0ae75a4952b683d9"
+  },
+  {
+    "id": "projet-attrition",
+    "source": {
+      "libelle": "Attrition RH et prix immobilier",
+      "sous": "BILLET 4",
+      "ancre": "#billet-attrition"
+    },
+    "texte": "Le projet Attrition RH et prix immobilier (Projets personnels · 2026) : Prédire le départ d'un employé (régression logistique, Random Forest) et le prix d'une maison (Ridge, Lasso, GridSearchCV). État : terminé. Code : https://github.com/Aly2001.",
+    "empreinte": "355500af8d53f5fb"
+  },
+  {
+    "id": "projet-attrition-outils",
+    "source": {
+      "libelle": "Attrition RH et prix immobilier",
+      "sous": "BILLET 4",
+      "ancre": "#billet-attrition"
+    },
+    "texte": "Le projet Attrition RH et prix immobilier, les outils : Scikit-learn, Pandas, Random Forest.",
+    "empreinte": "0bf3aa29c4d1a34f"
+  },
+  {
+    "id": "projet-avis-amazon",
+    "source": {
+      "libelle": "Réputation client par le NLP",
+      "sous": "BILLET 5",
+      "ancre": "#billet-avis-amazon"
+    },
+    "texte": "Le projet Réputation client par le NLP (Projet personnel · 2025) : 568 000 avis Amazon analysés pour en tirer 5 causes d'insatisfaction : TF-IDF, régression logistique, LDA et séries temporelles. État : terminé. Code : https://github.com/Aly2001/avis-clients-projet.",
+    "empreinte": "988f9b0bc38812c7"
+  },
+  {
+    "id": "projet-avis-amazon-outils",
+    "source": {
+      "libelle": "Réputation client par le NLP",
+      "sous": "BILLET 5",
+      "ancre": "#billet-avis-amazon"
+    },
+    "texte": "Le projet Réputation client par le NLP, les outils : NLP, TF-IDF, LDA, Séries temporelles.",
+    "empreinte": "4feb6ff831da10a9"
+  },
+  {
+    "id": "projet-rdv-medicaux",
+    "source": {
+      "libelle": "Rendez-vous médicaux",
+      "sous": "BILLET 6",
+      "ancre": "#billet-rdv-medicaux"
+    },
+    "texte": "Le projet Rendez-vous médicaux (Fin de Licence · 2024 – 2025) : Une application web avec authentification, calendrier et dossiers patients. État : terminé. Code : https://github.com/Aly2001/Aly-Keita.",
+    "empreinte": "643d20ebf216f088"
+  },
+  {
+    "id": "projet-rdv-medicaux-outils",
+    "source": {
+      "libelle": "Rendez-vous médicaux",
+      "sous": "BILLET 6",
+      "ancre": "#billet-rdv-medicaux"
+    },
+    "texte": "Le projet Rendez-vous médicaux, les outils : Django, SQLite, JavaScript.",
+    "empreinte": "77541198ad950e17"
+  },
+  {
+    "id": "parcours-kenieba",
+    "source": {
+      "libelle": "Kéniéba",
+      "sous": "LIGNE A",
+      "ancre": "#gare-kenieba"
+    },
+    "texte": "2021, Kéniéba (Mali) : Baccalauréat scientifique, Lycée LKBA.",
+    "empreinte": "b9b73804a3558ea4"
+  },
+  {
+    "id": "parcours-meknes",
+    "source": {
+      "libelle": "Meknès",
+      "sous": "LIGNE A",
+      "ancre": "#gare-meknes"
+    },
+    "texte": "2022 – 2024, Meknès (Maroc) : Licence Mathématiques-Informatique, Faculté des Sciences Moulay Ismail.",
+    "empreinte": "3018809640dce268"
+  },
+  {
+    "id": "parcours-bank-al-maghreb",
+    "source": {
+      "libelle": "Bank Al-Maghreb",
+      "sous": "LIGNE A",
+      "ancre": "#gare-bank-al-maghreb"
+    },
+    "texte": "Été 2024, Bank Al-Maghreb (Meknès) : Stagiaire Data Scientist, Modèle de risque client, SQL et Python, tableaux de bord Power BI.",
+    "empreinte": "cf039517b7b4da4d"
+  },
+  {
+    "id": "parcours-calais",
+    "source": {
+      "libelle": "Calais",
+      "sous": "LIGNE A",
+      "ancre": "#gare-calais"
+    },
+    "texte": "2025 – 2027, Calais (France) : Master 2 Ingénierie des Systèmes Complexes, EILCO.",
+    "empreinte": "2d51985b2f539404"
+  },
+  {
+    "id": "langues",
+    "source": {
+      "libelle": "Langues",
+      "sous": "LIGNE A",
+      "ancre": "#ligne"
+    },
+    "texte": "Langues parlées par Aly Keita : Français courant (C2), Anglais intermédiaire, Bambara (langue maternelle).",
+    "empreinte": "36a6f5d1c618debc"
+  },
+  {
+    "id": "competences-d",
+    "source": {
+      "libelle": "Data et machine learning",
+      "sous": "CORRESPONDANCES",
+      "ancre": "#correspondances"
+    },
+    "texte": "Compétences en data et machine learning : Python, Pandas, NumPy, Scikit-learn, TensorFlow, PySpark, Hadoop, SQL.",
+    "empreinte": "48e268d9746a7c66"
+  },
+  {
+    "id": "competences-ia",
+    "source": {
+      "libelle": "IA générative",
+      "sous": "CORRESPONDANCES",
+      "ancre": "#correspondances"
+    },
+    "texte": "Compétences en ia générative : LLM, RAG, NLP.",
+    "empreinte": "b6c13388f65b3013"
+  },
+  {
+    "id": "competences-w",
+    "source": {
+      "libelle": "Développement",
+      "sous": "CORRESPONDANCES",
+      "ancre": "#correspondances"
+    },
+    "texte": "Compétences en développement : React, Node.js, FastAPI, Django, Flask, Java / Spring, C / C++, Tests, Git.",
+    "empreinte": "749b621df045b0dd"
+  },
+  {
+    "id": "competences-b",
+    "source": {
+      "libelle": "Bases de données",
+      "sous": "CORRESPONDANCES",
+      "ancre": "#correspondances"
+    },
+    "texte": "Compétences en bases de données : Oracle, MySQL, MongoDB, Firebase.",
+    "empreinte": "fbdbefe2dc199b78"
+  },
+  {
+    "id": "competences-c",
+    "source": {
+      "libelle": "Cloud et visualisation",
+      "sous": "CORRESPONDANCES",
+      "ancre": "#correspondances"
+    },
+    "texte": "Compétences en cloud et visualisation : Google Cloud, Firebase, Docker, Power BI, Matplotlib, Seaborn.",
+    "empreinte": "e7b75f8d69de197d"
+  }
+]

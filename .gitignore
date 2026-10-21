@@ -3,5 +3,9 @@ dist
 .env
 .env.*
 !.env.example
+!.env.production
+api/.venv
+__pycache__
+.pytest_cache
 .firebase
 *.log

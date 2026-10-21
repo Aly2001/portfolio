@@ -1,0 +1,8 @@
+.venv
+__pycache__
+tests
+*.pyc
+.pytest_cache
+calibrer.py
+indexer.py
+requirements-dev.txt
