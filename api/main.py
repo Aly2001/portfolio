@@ -21,6 +21,8 @@ import math
 import os
 import re
 import threading
+import time
+import unicodedata
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Callable
@@ -42,7 +44,11 @@ SEUIL = float(os.getenv("SEUIL", "0.52"))            # 1er filtre : écarte le h
 NB_FICHES = int(os.getenv("NB_FICHES", "5"))          # fiches envoyées à Gemini
 QUOTA_VISITEUR = int(os.getenv("QUOTA_VISITEUR", "10"))
 QUOTA_GLOBAL = int(os.getenv("QUOTA_GLOBAL", "300"))
-LONGUEUR_MIN, LONGUEUR_MAX = 3, 300
+LONGUEUR_MIN, LONGUEUR_MAX = 2, 300
+# Les modèles récents « réfléchissent » avant de répondre. Pour retrouver une
+# information dans 5 fiches, la réflexion minimale suffit, et elle est bien plus rapide.
+REFLEXION = os.getenv("REFLEXION", "minimal")         # minimal, low, medium, high, ou vide
+DELAI_GEMINI_MS = int(os.getenv("DELAI_GEMINI_MS", "20000"))  # au-delà, on abandonne proprement
 ORIGINES = os.getenv(
     "ORIGINES", "https://aly-keita-portfolio.web.app,http://localhost:5173"
 ).split(",")
@@ -149,7 +155,12 @@ class Gemini:
     def __init__(self):
         from google import genai  # importé ici : les tests n'en ont pas besoin
 
-        self.client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
+        from google.genai import types
+
+        # Délai maximal pour CHAQUE appel à Gemini : un visiteur n'attend jamais une minute.
+        self.client = genai.Client(
+            api_key=os.environ["GEMINI_API_KEY"], http_options=types.HttpOptions(timeout=DELAI_GEMINI_MS)
+        )
 
     def embedding(self, texte: str) -> list[float]:
         r = self.client.models.embed_content(model=MODELE_EMBEDDING, contents=texte)
@@ -167,11 +178,14 @@ class Gemini:
                 response_mime_type="application/json",
                 response_schema=SCHEMA,
                 temperature=0.2,
-                max_output_tokens=400,
+                max_output_tokens=1024,
+                thinking_config=types.ThinkingConfig(thinking_level=REFLEXION) if REFLEXION else None,
                 # Pas d'appels d'outils automatiques : l'IA ne fait que répondre.
                 automatic_function_calling=types.AutomaticFunctionCallingConfig(disable=True),
             ),
         )
+        if not r.text:  # réponse vide ou coupée : on le signale clairement
+            raise ValueError(f"Réponse vide de Gemini (fin : {r.candidates[0].finish_reason if r.candidates else '?'})")
         return json.loads(r.text)
 
 
@@ -200,10 +214,60 @@ LIMITE = {
 }
 
 
+# ── Les politesses : reconnues par le code, sans Gemini et sans toucher au quota ──
+# Seulement quand le message entier est une politesse : « Bonjour, parle-moi de
+# Quai Nord » reste une vraie question et suit le chemin normal.
+POLITESSES = {
+    "salut": ({"bonjour", "salut", "bonsoir", "hello", "coucou", "hi", "hey", "yo", "bjr", "slt"},
+              "Bonjour ! Posez-moi une question sur le parcours, les compétences ou les projets d'Aly. Par exemple :"),
+    "merci": ({"merci", "thanks", "thank you", "merci beaucoup", "merci bien", "mrc"},
+              "Avec plaisir ! Une autre question sur Aly ? Par exemple :"),
+    "revoir": ({"au revoir", "bye", "a bientot", "a plus", "bonne journee", "bonne soiree", "ciao"},
+               "Merci de votre visite ! Pour continuer l'échange, vous pouvez écrire directement à Aly."),
+    "accord": ({"ok", "okay", "d accord", "dac", "super", "parfait", "genial", "top", "cool", "tres bien"},
+               "Parfait ! Une autre question ? Par exemple :"),
+}
+
+
+def simplifier(texte: str) -> str:
+    """Minuscules, sans accents ni ponctuation : « Merci ! » et « merci » se ressemblent."""
+    sans_accents = unicodedata.normalize("NFD", texte.lower()).encode("ascii", "ignore").decode()
+    return " ".join(re.sub(r"[^a-z ]", " ", sans_accents).split())
+
+
+def politesse(question: str):
+    """Renvoie (famille, réponse) si le message entier n'est fait que de politesses.
+
+    « merci Aly », « merci et au revoir », « bonjour, ça va ? » sont reconnus ;
+    « Bonjour, parle-moi de Quai Nord » ne l'est pas : c'est une vraie question.
+    """
+    mots = [m for m in simplifier(question).split() if m != "aly"]
+    texte = " ".join(mots).replace(" ca va", " et ca va")
+    parties = [p.strip() for p in texte.split(" et ") if p.strip()]
+    if not parties:
+        return None
+    familles = []
+    for partie in parties:
+        if partie in {"ca va", "comment ca va", "comment allez vous"}:
+            familles.append("salut")
+            continue
+        famille = next((f for f, (formules, _) in POLITESSES.items() if partie in formules), None)
+        if famille is None:
+            return None
+        familles.append(famille)
+    famille = familles[-1]  # « merci et au revoir » : c'est l'au revoir qui compte
+    return famille, POLITESSES[famille][1]
+
+
 def traiter(question: str, visiteur: str, moteur, fiches, vecteurs, quotas: Quotas) -> dict:
     question = " ".join(question.split())
     if not (LONGUEUR_MIN <= len(question) <= LONGUEUR_MAX):
         return {"statut": "erreur", "reponse": f"Votre question doit faire entre {LONGUEUR_MIN} et {LONGUEUR_MAX} caractères.", "sources": [], "restantes": None}
+
+    trouvee = politesse(question)
+    if trouvee:
+        famille, reponse = trouvee
+        return {"statut": "politesse", "famille": famille, "reponse": reponse, "sources": [], "restantes": None}
 
     restantes = quotas.consommer(visiteur)
     if restantes is None:
@@ -265,11 +329,15 @@ def creer_app(moteur_fabrique: Callable = Gemini, dossier: Path = ICI) -> FastAP
 
     @app.post("/question")
     def question(q: Question, request: Request):
+        debut = time.monotonic()
         try:
-            return traiter(q.question, identifiant_visiteur(request), moteur(), fiches, vecteurs, quotas)
+            r = traiter(q.question, identifiant_visiteur(request), moteur(), fiches, vecteurs, quotas)
         except Exception:  # jamais de détail technique renvoyé au visiteur
             log.exception("Erreur pendant le traitement d'une question")
-            return {"statut": "erreur", "reponse": "L'assistant est momentanément indisponible. Vous pouvez écrire directement à Aly.", "sources": [], "restantes": None}
+            r = {"statut": "erreur", "reponse": "L'assistant est momentanément indisponible. Vous pouvez écrire directement à Aly.", "sources": [], "restantes": None}
+        # Une ligne par question : le statut et la durée, jamais le texte de la question.
+        log.info("question traitée : statut=%s durée=%.1fs", r["statut"], time.monotonic() - debut)
+        return r
 
     return app
 

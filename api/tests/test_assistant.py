@@ -111,3 +111,23 @@ def test_reponses_annoncees_en_utf8(dossier):
     client = TestClient(main.creer_app(lambda: FauxGemini(), dossier))
     for r in (client.get("/sante"), client.post("/question", json={"question": "Quelle expérience ?"})):
         assert r.headers["content-type"] == "application/json; charset=utf-8"
+
+
+@pytest.mark.parametrize("message,famille", [
+    ("Bonjour", "salut"), ("bonjour !", "salut"), ("Salut ça va ?", "salut"), ("Bonjour Aly", "salut"),
+    ("Merci", "merci"), ("Merci beaucoup !", "merci"), ("ok", "accord"),
+    ("Au revoir", "revoir"), ("merci et au revoir", "revoir"),
+])
+def test_politesses_sans_gemini_ni_quota(dossier, message, famille):
+    faux = FauxGemini()
+    client = TestClient(main.creer_app(lambda: faux, dossier))
+    for _ in range(main.QUOTA_VISITEUR + 2):  # les politesses ne consomment pas le quota
+        r = client.post("/question", json={"question": message}).json()
+    assert r["statut"] == "politesse" and r["famille"] == famille
+    assert faux.appels_reponse == 0
+    assert client.post("/question", json={"question": "Quelle expérience ?"}).json()["statut"] == "ok"
+
+
+@pytest.mark.parametrize("message", ["Bonjour, parle-moi de Quai Nord", "Est-il ok pour un stage ?", "Super projet !"])
+def test_vraies_questions_avec_mot_poli(dossier, message):
+    assert poser(dossier, FauxGemini(), question=message)["statut"] != "politesse"

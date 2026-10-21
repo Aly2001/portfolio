@@ -14,9 +14,14 @@ const ACCUEIL =
 const HORS_SERVICE =
   "L'assistant n'est pas encore branché. En attendant, vous pouvez écrire directement à Aly."
 const INDISPONIBLE = "L'assistant est momentanément indisponible. Vous pouvez écrire directement à Aly."
+const TROP_LONG = "L'assistant met trop de temps à répondre. Réessayez dans un instant, ou écrivez directement à Aly."
+// Au-delà, on arrête d'attendre : le serveur abandonne de lui-même après 20 s par appel.
+const DELAI_MAX_MS = 30000
 
 // Ces statuts proposent tous le même bouton « Écrire à Aly » : une seule règle.
 const AVEC_EMAIL = new Set(['refus', 'limite', 'erreur', 'hors-service'])
+// Après un « bonjour » ou un « merci », on repropose les questions suggérées.
+const AVEC_SUGGESTIONS = new Set(['accueil', 'politesse'])
 
 function BoutonEmail() {
   return <a className="annonce__email" href={`mailto:${profil.email}`}><Icone nom="mail" taille={16} />Écrire à Aly</a>
@@ -28,7 +33,7 @@ function Annonce({ m, onSource }) {
       <span className="annonce__libelle">Annonce</span>
       <div className="annonce__bulle">
         <p>{m.texte}</p>
-        {AVEC_EMAIL.has(m.statut) && <BoutonEmail />}
+        {(AVEC_EMAIL.has(m.statut) || m.famille === 'revoir') && <BoutonEmail />}
       </div>
       {m.sources?.length > 0 && (
         <div className="annonce__sources">
@@ -100,22 +105,30 @@ export default function Assistant() {
     setMessages((m) => [...m, { de: 'visiteur', texte: q }])
     setAttente(true)
     let r
+    const arret = new AbortController()
+    const minuteur = setTimeout(() => arret.abort(), DELAI_MAX_MS)
     try {
       const rep = await fetch(`${ASSISTANT_URL}/question`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ question: q }),
+        signal: arret.signal,
       })
       r = await rep.json()
-    } catch {
-      r = { statut: 'erreur', reponse: INDISPONIBLE, sources: [] }
+    } catch (e) {
+      r = { statut: 'erreur', reponse: e.name === 'AbortError' ? TROP_LONG : INDISPONIBLE, sources: [] }
+    } finally {
+      clearTimeout(minuteur)
     }
     setAttente(false)
     if (r.statut === 'limite') setBloque(true)
-    setMessages((m) => [...m, { de: 'assistant', statut: r.statut, texte: r.reponse, sources: r.sources }])
+    setMessages((m) => [...m, { de: 'assistant', statut: r.statut, famille: r.famille, texte: r.reponse, sources: r.sources }])
   }
 
-  const premiereFois = messages.length === 1 && !bloque
+  // Les suggestions s'affichent sous le DERNIER message, s'il les appelle.
+  const dernier = messages[messages.length - 1]
+  const montrerSuggestions = !bloque && !attente && dernier.de === 'assistant' && AVEC_SUGGESTIONS.has(dernier.statut)
+    && !(dernier.statut === 'politesse' && dernier.famille === 'revoir')
 
   return (
     <>
@@ -138,7 +151,7 @@ export default function Assistant() {
                 ? <p key={i} className="question-visiteur">{m.texte}</p>
                 : <Annonce key={i} m={m} onSource={allerALaSource} />,
             )}
-            {premiereFois && (
+            {montrerSuggestions && (
               <div className="suggestions">
                 {SUGGESTIONS.map((s) => <button key={s} type="button" onClick={() => poser(s)}>{s}</button>)}
               </div>
