@@ -1,211 +1,159 @@
 // ─────────────────────────────────────────────────────────────
 // SOURCE UNIQUE DU CONTENU
-// Tout le texte du site vient d'ici. Pour modifier une info,
-// on la change UNE fois dans ce fichier, et toutes les sections
-// (et plus tard l'assistant RAG) suivent automatiquement.
+// Tout le texte du site vient d'ici, et l'assistant lit le même fichier
+// (via « npm run fiches »). Une information se change UNE fois, ici.
 // ─────────────────────────────────────────────────────────────
 
 export const profil = {
   nom: 'Aly Keita',
   titre: 'Data Scientist & Développeur IA',
-  accroche:
-    "Je construis des outils qui partent de vraies données et arrivent jusqu'aux utilisateurs.",
+  accroche: "Des vraies données jusqu'aux utilisateurs.",
+  presentation:
+    "data scientist et développeur IA, en Master 2 Ingénierie des Systèmes Complexes à l'EILCO (Calais). Je collecte, nettoie et modélise les données, puis j'en fais des outils que les gens utilisent vraiment.",
   disponible: true, // affiche « Ouvert aux opportunités »
+  mobilite: 'partout en France',
+  ville: 'Calais',
+  specialite: 'Data et IA générative',
   email: 'alykeita295@gmail.com',
   linkedin: 'https://www.linkedin.com/in/aly-keita-306703340/',
   github: 'https://github.com/Aly2001',
-  mobilite: 'Mobilité : France entière',
 
-  // Chemin du CV PUBLIC (sans numéro de téléphone), à déposer dans /public.
-  // Tant que la valeur est null, les boutons « CV » sont masqués.
-  // Exemple quand le fichier sera prêt : '/cv-aly-keita.pdf'
+  // CV PUBLIC (sans numéro de téléphone), dans /public. null = boutons CV masqués.
   cvUrl: '/cv-aly-keita.pdf',
 }
 
-// Chiffre « EN DIRECT » lu sur Quai Nord.
-// null = on n'affiche pas de chiffre (jamais de chiffre inventé).
-// Il sera branché sur Quai Nord dans une prochaine étape.
-export const direct = {
-  pourcentageRisque: null,
+// Chiffres de Quai Nord, à UN seul endroit (ils grandissent chaque nuit).
+export const quaiNord = {
+  passages: '775 550',
 }
 
 // États possibles d'un projet : 'en-ligne', 'en-cours', 'termine'
 export const ETATS = {
-  // court : tableau sur ordinateur · mobile : tableau sur téléphone
-  // (vide = seulement le voyant) · long : pastilles des billets
-  'en-ligne': { court: 'EN LIGNE', mobile: '', long: 'En ligne' },
-  'en-cours': { court: 'EN COURS', mobile: '', long: 'En cours' },
-  termine: { court: 'TERMINÉ', mobile: 'FINI', long: 'Terminé' },
+  'en-ligne': 'En ligne',
+  'en-cours': 'En cours',
+  termine: 'Terminé',
 }
+
+const GH = 'https://github.com/Aly2001/'
 
 export const projets = [
   {
     id: 'quai-nord',
-    heure: '09:12',
-    code: 'QUAI NORD',
-    destination: 'Prédire le retard des TER',
-    destinationCourte: 'Prédire le retard des TER',
-    etat: 'en-ligne',
     phare: true,
+    etat: 'en-ligne',
     titre: 'Quai Nord',
-    sousTitre: "Prévoir le retard d'un TER des Hauts-de-France avant de partir.",
-    site: 'https://quai-nord.web.app',
-    code_url: 'https://github.com/Aly2001/quai-nord',
+    contexte: 'Projet personnel · 2026',
+    resume: "Prévoir le risque de retard d'un TER des Hauts-de-France avant de partir.",
+    texte: `Les retards SNCF sont collectés toutes les 5 minutes, croisés avec les horaires et la météo : ${quaiNord.passages} passages analysés. Nora, une assistante IA, guide ensuite vers le bus, le tram ou le métro, et le code vérifie chacune de ses réponses.`,
     chaine: ['Collecte', 'Nettoyage', 'Modèle', 'Site', 'Nora'],
     chaineActive: 'Modèle',
-    chiffres: [
-      { valeur: '5 min', libelle: 'une collecte en continu' },
-      { valeur: '65 000', libelle: 'passages analysés' },
-      { valeur: '6 villes', libelle: 'bus, tram et métro avec Nora' },
-    ],
+    visuel: { image: '/projets/quai-nord-carte.webp', alt: 'Carte des retards TER de Quai Nord', largeur: 900, hauteur: 1315 },
+    site: 'https://quai-nord.web.app',
+    code: GH + 'quai-nord',
+    outils: ['Python', 'Pandas', 'SQLite', 'FastAPI', 'React', 'Vite', 'Docker', 'Google Cloud', 'Firebase', 'Gemini', 'Vitest', 'Pytest'],
+    // Lu seulement par l'assistant : la démarche détaillée.
     etapes: [
-      {
-        titre: 'Le problème',
-        texte:
-          "Les applications disent si un train EST en retard, jamais s'il RISQUE de l'être, la veille, pour choisir le bon.",
-      },
-      {
-        titre: 'Les données',
-        texte:
-          'Les retards en temps réel de la SNCF, collectés toutes les 5 minutes sur une VM Google Cloud, plus les horaires et la météo.',
-      },
-      {
-        titre: 'La méthode',
-        texte:
-          'Nettoyage (TER seulement, prévisions écartées), facteurs du retard, lissage bayésien, puis un modèle évalué sur des semaines jamais vues.',
-      },
-      {
-        titre: 'Le résultat',
-        texte:
-          'Un site en ligne, indexé par Google, et Nora, une IA dont le code vérifie chaque réponse. Le modèle de prédiction arrive mi-novembre.',
-      },
-      {
-        titre: "Ce que j'ai appris",
-        texte: "Ne jamais croire le premier graphique ; une IA peut inventer, le code doit vérifier.",
-      },
+      { titre: 'Le problème', texte: "Les applications disent si un train EST en retard, jamais s'il RISQUE de l'être, la veille, pour choisir le bon." },
+      { titre: 'Les données', texte: `Les retards en temps réel de la SNCF, collectés toutes les 5 minutes sur une VM Google Cloud, plus les horaires et la météo : ${quaiNord.passages} passages analysés.` },
+      { titre: 'La méthode', texte: 'Nettoyage (TER seulement, prévisions écartées), facteurs du retard, lissage bayésien, puis un modèle évalué sur des semaines jamais vues.' },
+      { titre: 'Le résultat', texte: 'Un site en ligne, indexé par Google, et Nora, une IA dont le code vérifie chaque réponse. Le modèle de prédiction arrive mi-novembre.' },
+      { titre: "Ce que j'ai appris", texte: "Ne jamais croire le premier graphique ; une IA peut inventer, le code doit vérifier." },
     ],
-    outils: ['Python', 'Pandas', 'SQLite', 'React', 'Vite', 'FastAPI', 'Docker', 'Google Cloud', 'Firebase', 'Gemini', 'Vitest', 'Pytest'],
-    // Lu seulement par l'assistant (pas affiché sur le site) : détails en plus.
     complement:
-      "Nora est l'assistante IA de Quai Nord (Gemini, API FastAPI sur Cloud Run). Elle aide à prendre le bus, le tram ou le métro depuis la gare dans 6 villes. Son code vérifie chaque réponse : les adresses et les lignes inventées sont bloquées, et des quotas protègent le service. 65 000 passages de trains ont été analysés ; le modèle de prédiction est en cours et arrive vers mi-novembre.",
+      "Nora est l'assistante IA de Quai Nord (Gemini, API FastAPI). Elle aide à prendre le bus, le tram ou le métro depuis la gare dans 6 villes. Son code vérifie chaque réponse : les adresses et les lignes inventées sont bloquées, et des quotas protègent le service.",
   },
   {
     id: 'iot',
-    heure: '10:40',
-    code: 'IOT ESP32',
-    destination: 'Détecter les pannes de machines',
-    destinationCourte: 'Détecter les pannes',
-    etat: 'termine',
+    etat: 'en-cours',
     titre: 'Maintenance prédictive IoT',
     contexte: 'EILCO · 2026 – 2027',
-    texte:
-      "Un capteur ESP32 écoute les vibrations d'une machine ; un modèle repère les défauts, suivis en temps réel sur Firebase.",
+    texte: "Un capteur ESP32 écoute les vibrations d'une machine ; un modèle doit repérer les défauts, avec un suivi en temps réel.",
+    visuel: {
+      schema: [['Capteur', 'vibrations'], ['ESP32', 'mesure'], ['Modèle', 'détecte'], ['Firebase', 'suivi']],
+      alt: 'Schéma : capteur, ESP32, modèle, suivi Firebase',
+    },
+    code: null,
     outils: ['ESP32', 'Python', 'Machine learning', 'Firebase'],
-    code_url: null,
   },
   {
     id: 'agent-rag',
-    heure: '11:05',
-    code: 'AGENT RAG',
-    destination: "Répondre aux clients d'un hôtel",
-    destinationCourte: 'Répondre aux clients',
     etat: 'termine',
-    titre: 'Agent conversationnel LLM + RAG',
+    titre: 'Agent LLM + RAG pour un hôtel',
     contexte: 'Projet personnel · 2026',
-    texte:
-      "Un agent qui répond aux clients d'un hôtel en cherchant la réponse dans les documents de l'établissement.",
+    texte: "Un agent qui répond aux clients en cherchant la réponse dans les documents de l'établissement.",
+    visuel: {
+      schema: [['Question', 'du client'], ['Recherche', 'documents'], ['LLM', 'rédige'], ['Réponse', 'sourcée']],
+      alt: 'Schéma : question, recherche, LLM, réponse',
+    },
+    code: null,
     outils: ['LLM', 'RAG', 'Python'],
-    code_url: null,
-  },
-  {
-    id: 'attrition',
-    heure: '14:30',
-    code: 'ATTRITION RH',
-    destination: 'Prédire les départs et les prix',
-    destinationCourte: 'Départs et prix',
-    etat: 'termine',
-    titre: 'Attrition RH et prix immobilier',
-    contexte: 'Projets personnels · 2026',
-    texte:
-      "Prédire le départ d'un employé (régression logistique, Random Forest) et le prix d'une maison (Ridge, Lasso, GridSearchCV).",
-    outils: ['Scikit-learn', 'Pandas', 'Random Forest'],
-    code_url: 'https://github.com/Aly2001',
   },
   {
     id: 'avis-amazon',
-    heure: '16:15',
-    code: 'AVIS AMAZON',
-    destination: '568 000 avis analysés',
-    destinationCourte: '568 000 avis analysés',
     etat: 'termine',
     titre: 'Réputation client par le NLP',
     contexte: 'Projet personnel · 2025',
-    texte:
-      "568 000 avis Amazon analysés pour en tirer 5 causes d'insatisfaction : TF-IDF, régression logistique, LDA et séries temporelles.",
-    outils: ['NLP', 'TF-IDF', 'LDA', 'Séries temporelles'],
-    code_url: 'https://github.com/Aly2001/avis-clients-projet',
+    texte: "568 454 avis Amazon analysés : sentiment, sujets d'insatisfaction et évolution dans le temps.",
+    visuel: { image: '/projets/avis-notes.webp', alt: 'Répartition des notes de 568 454 avis Amazon', largeur: 1000, hauteur: 565 },
+    code: GH + 'avis-clients-projet',
+    outils: ['NLP', 'TF-IDF', 'Régression logistique', 'LDA', 'Séries temporelles'],
+  },
+  {
+    id: 'attrition',
+    etat: 'termine',
+    titre: 'Attrition RH',
+    contexte: 'Projet personnel · 2026',
+    texte: "Prédire le départ d'un employé (1 470 salariés) : régression logistique et Random Forest, évalués sur le rappel. Ceux qui font des heures supplémentaires partent environ trois fois plus.",
+    visuel: { image: '/projets/rh-heures-sup.webp', alt: 'Départs selon les heures supplémentaires', largeur: 571, hauteur: 432 },
+    code: GH + 'hr-attrition-prediction',
+    outils: ['Scikit-learn', 'Pandas', 'Régression logistique', 'Random Forest'],
+  },
+  {
+    id: 'prix-maisons',
+    etat: 'termine',
+    titre: 'Prix des maisons',
+    contexte: 'Projet personnel · 2026',
+    texte: 'Prédire le prix de vente d’une maison : Ridge optimisé par GridSearchCV, R² de 0,89 sur le jeu de test.',
+    visuel: { image: '/projets/maison-reel-predit.webp', alt: 'Prix réel contre prix prédit par le modèle Ridge', largeur: 722, hauteur: 700 },
+    code: GH + 'prediction_prix_de_maison',
+    outils: ['Scikit-learn', 'Ridge / Lasso', 'GridSearchCV'],
   },
   {
     id: 'rdv-medicaux',
-    heure: '18:00',
-    code: 'RDV MÉDICAUX',
-    destination: 'Une application web complète',
-    destinationCourte: 'Application web',
     etat: 'termine',
     titre: 'Rendez-vous médicaux',
     contexte: 'Fin de Licence · 2024 – 2025',
-    texte: 'Une application web avec authentification, calendrier et dossiers patients.',
+    texte: 'Une application web : authentification, calendrier et dossiers patients.',
+    visuel: { image: '/projets/rdv-connexion.webp', alt: "Page de connexion de l'application de rendez-vous", largeur: 1000, hauteur: 625 },
+    code: GH + 'Aly-Keita',
     outils: ['Django', 'SQLite', 'JavaScript'],
-    code_url: 'https://github.com/Aly2001/Aly-Keita',
   },
 ]
 
+// Du plus récent au plus ancien. « points » = détails mis en avant (le stage).
 export const parcours = [
-  { id: 'kenieba', annee: '2021', lieu: 'Kéniéba', pays: 'Mali', titre: 'Baccalauréat scientifique', detail: 'Lycée LKBA' },
-  {
-    id: 'meknes',
-    annee: '2022 – 2024',
-    lieu: 'Meknès',
-    pays: 'Maroc',
-    titre: 'Licence Mathématiques-Informatique',
-    detail: 'Faculté des Sciences Moulay Ismail',
-  },
+  { id: 'calais', annee: '2025 – 2027', titre: 'Master 2 Ingénierie des Systèmes Complexes', lieu: 'EILCO, Calais' },
   {
     id: 'bank-al-maghreb',
     annee: 'Été 2024',
-    lieu: 'Bank Al-Maghreb',
-    pays: 'Meknès',
     titre: 'Stagiaire Data Scientist',
-    detail: 'Modèle de risque client, SQL et Python, tableaux de bord Power BI',
+    lieu: 'Bank Al-Maghreb, Meknès (Maroc)',
+    points: [
+      'Un modèle de prédiction pour évaluer le risque client',
+      "L'analyse des données en SQL et Python, avec des mises à jour automatisées",
+      "Des tableaux de bord Power BI pour l'aide à la décision",
+    ],
   },
-  {
-    id: 'calais',
-    annee: '2025 – 2027',
-    lieu: 'Calais',
-    pays: 'France',
-    titre: 'Master 2 Ingénierie des Systèmes Complexes',
-    detail: 'EILCO',
-  },
+  { id: 'meknes', annee: '2022 – 2024', titre: 'Licence Mathématiques-Informatique', lieu: 'Faculté des Sciences Moulay Ismail, Meknès' },
+  { id: 'kenieba', annee: '2021', titre: 'Baccalauréat scientifique', lieu: 'Lycée LKBA, Kéniéba (Mali)' },
 ]
 
 export const langues = ['Français courant (C2)', 'Anglais intermédiaire', 'Bambara (langue maternelle)']
 
 export const competences = [
-  {
-    pastille: 'D',
-    domaine: 'Data et machine learning',
-    outils: ['Python', 'Pandas', 'NumPy', 'Scikit-learn', 'TensorFlow', 'PySpark', 'Hadoop', 'SQL'],
-  },
-  { pastille: 'IA', domaine: 'IA générative', outils: ['LLM', 'RAG', 'NLP'] },
-  {
-    pastille: 'W',
-    domaine: 'Développement',
-    outils: ['React', 'Node.js', 'FastAPI', 'Django', 'Flask', 'Java / Spring', 'C / C++', 'Tests', 'Git'],
-  },
-  { pastille: 'B', domaine: 'Bases de données', outils: ['Oracle', 'MySQL', 'MongoDB', 'Firebase'] },
-  {
-    pastille: 'C',
-    domaine: 'Cloud et visualisation',
-    outils: ['Google Cloud', 'Firebase', 'Docker', 'Power BI', 'Matplotlib', 'Seaborn'],
-  },
+  { id: 'data', domaine: 'Data et machine learning', outils: ['Python', 'Pandas', 'NumPy', 'Scikit-learn', 'TensorFlow', 'PySpark', 'Hadoop', 'SQL'] },
+  { id: 'ia', domaine: 'IA générative', outils: ['LLM', 'RAG', 'NLP', 'Gemini'] },
+  { id: 'dev', domaine: 'Développement', outils: ['React', 'Node.js', 'FastAPI', 'Django', 'Flask', 'Java / Spring', 'C / C++', 'Tests', 'Git'] },
+  { id: 'bd', domaine: 'Bases de données', outils: ['Oracle', 'MySQL', 'MongoDB', 'Firebase'] },
+  { id: 'cloud', domaine: 'Cloud et visualisation', outils: ['Google Cloud', 'Firebase', 'Docker', 'Power BI', 'Matplotlib', 'Seaborn'] },
 ]

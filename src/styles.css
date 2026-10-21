@@ -1,62 +1,45 @@
 /* ─────────────────────────────────────────────────────────────
-   1. LES RÉGLAGES COMMUNS (couleurs, polices, tailles)
-   On change une couleur ICI et tout le site suit.
+   1. LES RÉGLAGES COMMUNS : on change une couleur ici, tout suit.
    ───────────────────────────────────────────────────────────── */
 :root {
-  --nuit: #14213d;
-  --nuit-2: #182752;
-  --encre: #0a1226;
-  --encre-ligne: #1b2850;
-  --bord-sombre: #22305a;
-  --jaune: #f2c230;
-  --papier: #fbf8ef;
-  --fond: #f1ede2;
-  --filet-papier: #e6dfc8;
-  --bord-papier: #d8d2be;
-  --bleu-lien: #1f6f8b;
-  --brun: #6b4500;
-  --texte: #14213d;
-  --texte-doux: #3e485c;
-  --texte-discret: #5a6478;
-  --clair: #e3e8ee;
-  --clair-doux: #c9d3e3;
-  --gris-bleu: #9fb1cc;
-  --vert: #2fbf71;
-  --vert-fond: #e2f5ea;
-  --vert-texte: #136b3e;
+  --fond: #101411;          /* vert très sombre */
+  --surface: #171d19;
+  --surface-sombre: #0c100d;
+  --filet: #28322b;
+  --texte: #eceff1;
+  --texte-doux: #a9b2aa;
+  --ocre: #e3a23b;          /* l'accent : ocre doré */
+  --ocre-clair: #f0b860;
+  --ocre-fond: #2a2213;
+  --encre-ocre: #17130a;    /* texte posé sur l'ocre */
+  --vert: #7bd88f;
 
-  --police: 'Barlow', system-ui, sans-serif;
-  --police-titre: 'Barlow Condensed', 'Arial Narrow', sans-serif;
-  --police-tableau: 'JetBrains Mono', ui-monospace, monospace;
+  --police: 'Figtree', system-ui, sans-serif;
+  --police-titre: 'Bricolage Grotesque', 'Figtree', system-ui, sans-serif;
 
-  --largeur: 1240px;
-  --marge: clamp(16px, 4vw, 32px);
-  --rayon: 16px;
+  --largeur: 1180px;
+  --marge: clamp(18px, 4vw, 40px);
+  --rayon: 6px;
 
-  color-scheme: light;
+  color-scheme: dark;
 }
 
 *, *::before, *::after { box-sizing: border-box; }
-html { scroll-behavior: smooth; scroll-padding-top: 72px; -webkit-text-size-adjust: 100%; }
+html { scroll-behavior: smooth; scroll-padding-top: 80px; -webkit-text-size-adjust: 100%; }
 body {
-  margin: 0;
-  background: var(--fond);
-  color: var(--texte);
-  font-family: var(--police);
-  font-size: 17px;
-  line-height: 1.5;
+  margin: 0; background: var(--fond); color: var(--texte);
+  font-family: var(--police); font-size: 17px; line-height: 1.55;
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
-img { max-width: 100%; display: block; }
-h1, h2, h3, h4, p { margin: 0; }
+img { max-width: 100%; height: auto; display: block; }
+h1, h2, h3, h4, p, figure, dl, dd { margin: 0; }
 ul, ol { margin: 0; padding: 0; list-style: none; }
-a { color: var(--bleu-lien); }
-a:hover { color: var(--nuit); }
-dl, dd { margin: 0; }
+a { color: var(--ocre); }
+a:hover { color: var(--texte); }
+strong { color: var(--texte); }
 
-/* Contour visible au clavier, partout : c'est une règle générale,
-   pas un réglage bouton par bouton. */
-:focus-visible { outline: 3px solid var(--jaune); outline-offset: 3px; border-radius: 4px; }
+/* Contour visible au clavier partout : une règle générale. */
+:focus-visible { outline: 3px solid var(--ocre); outline-offset: 3px; border-radius: 3px; }
 
 .sr-only {
   position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
@@ -64,540 +47,331 @@ dl, dd { margin: 0; }
 }
 .lien-evitement {
   position: absolute; left: 12px; top: -60px; z-index: 100; padding: 10px 16px;
-  border-radius: 8px; background: var(--jaune); color: var(--nuit); font-weight: 700;
+  border-radius: 4px; background: var(--ocre); color: var(--encre-ocre); font-weight: 700;
 }
 .lien-evitement:focus { top: 12px; }
 
 .conteneur { max-width: var(--largeur); margin: 0 auto; padding-left: var(--marge); padding-right: var(--marge); }
-.section { padding-top: clamp(56px, 8vw, 96px); padding-bottom: clamp(40px, 6vw, 64px); }
-.jaune { color: var(--jaune); }
+.section { padding-top: clamp(48px, 7vw, 72px); padding-bottom: clamp(24px, 4vw, 40px); display: flex; flex-direction: column; gap: 32px; }
+.ocre { color: var(--ocre); }
 .icone { flex: none; }
-.seul-mobile { display: none; }
+.discret { font-size: 14px; color: var(--texte-doux); }
+.rangee { display: flex; flex-wrap: wrap; gap: 12px; }
 
 /* ─────────────────────────────────────────────────────────────
-   2. LES PIÈCES RÉUTILISÉES (titres, boutons, étiquettes…)
+   2. LES PIÈCES RÉUTILISÉES
    ───────────────────────────────────────────────────────────── */
-.petit-titre {
-  font-family: var(--police-tableau); font-size: 13px; font-weight: 700;
-  letter-spacing: 0.08em; text-transform: uppercase; color: var(--bleu-lien);
-}
-.petit-titre--jaune { color: var(--jaune); }
-.petit-titre--brun { color: var(--brun); }
-.grand-titre {
-  margin-top: 6px; font-family: var(--police-titre); font-weight: 700;
-  font-size: clamp(46px, 7vw, 72px); line-height: 0.9;
-}
-.texte-intro { max-width: 34ch; font-size: 18px; color: var(--texte-doux); }
-.discret { font-size: 14px; color: var(--texte-discret); }
-
 .bouton {
   display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-  min-height: 52px; padding: 0 22px; border-radius: 999px; border: 0;
-  font: inherit; font-weight: 700; text-decoration: none; cursor: pointer;
-  transition: transform 0.15s ease;
+  min-height: 48px; padding: 0 20px; border-radius: 4px; border: 0;
+  font: inherit; font-size: 15px; font-weight: 700; text-decoration: none; cursor: pointer;
 }
-.bouton:active { transform: translateY(1px); }
-.bouton--plein { background: var(--jaune); color: var(--nuit); }
-.bouton--plein:hover { color: var(--nuit); background: #ffd24d; }
-.bouton--contour { box-shadow: inset 0 0 0 1.5px #fff; color: #fff; }
-.bouton--contour:hover { color: var(--nuit); background: #fff; }
-.bouton--nuit { background: var(--nuit); color: #fff; }
-.bouton--nuit:hover { color: #fff; background: var(--nuit-2); }
-.bouton--contour-nuit { box-shadow: inset 0 0 0 1.5px var(--nuit); color: var(--nuit); }
-.bouton--contour-nuit:hover { background: var(--nuit); color: #fff; }
-.bouton--blanc { background: #fff; color: var(--nuit); border-radius: 14px; justify-content: flex-start; }
-.rangee-boutons { display: flex; flex-wrap: wrap; gap: 12px; }
+.bouton--petit { min-height: 44px; padding: 0 16px; }
+.bouton--plein { background: var(--ocre); color: var(--encre-ocre); }
+.bouton--plein:hover { background: var(--ocre-clair); color: var(--encre-ocre); }
+.bouton--contour { box-shadow: inset 0 0 0 1.5px var(--texte); color: var(--texte); }
+.bouton--contour:hover { background: var(--texte); color: var(--fond); }
 
-.lien-fort { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; font-weight: 700; text-decoration: none; }
+.lien-souligne {
+  display: inline-flex; align-items: center; gap: 6px; min-height: 44px; align-self: flex-start;
+  color: var(--texte); font-weight: 700; text-decoration: underline;
+  text-decoration-color: var(--ocre); text-underline-offset: 4px;
+}
+.lien-souligne:hover { color: var(--ocre); }
 
 .etiquettes { display: flex; flex-wrap: wrap; gap: 6px; }
 .etiquettes li {
-  padding: 4px 10px; border-radius: 999px; background: #fff;
-  box-shadow: inset 0 0 0 1px var(--bord-papier); font-size: 13px; font-weight: 600;
-}
-.etiquettes--sombre li { background: var(--bord-sombre); box-shadow: none; color: #fff; }
-
-.voyant {
-  display: inline-block; width: 10px; height: 10px; border-radius: 50%;
-  background: var(--vert); box-shadow: 0 0 0 4px rgba(47, 191, 113, 0.25); flex: none;
+  padding: 4px 10px; border-radius: 4px; background: var(--surface);
+  box-shadow: inset 0 0 0 1px var(--filet); font-size: 13px;
 }
 
-/* Les encoches rondes des billets prennent la couleur du fond de page,
-   pour donner l'illusion d'un trou dans le papier. */
-.encoche { position: absolute; width: 28px; height: 28px; border-radius: 50%; background: var(--fond); }
+.point { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: currentColor; flex: none; }
+.point--vert { width: 9px; height: 9px; background: var(--vert); }
+
+.etat { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 700; }
+.etat--en-ligne { color: var(--vert); }
+.etat--en-cours { color: var(--ocre); }
+
+.entete-section {
+  display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between;
+  gap: 12px 40px; padding-bottom: 18px; border-bottom: 1px solid var(--filet);
+}
+.entete-section h2 {
+  font-family: var(--police-titre); font-weight: 700; font-size: clamp(36px, 5vw, 56px);
+  line-height: 0.95; letter-spacing: -0.02em;
+}
+.entete-section p { max-width: 42ch; font-size: 16px; line-height: 1.5; color: var(--texte-doux); }
 
 /* ─────────────────────────────────────────────────────────────
-   3. LE BANDEAU ET L'EN-TÊTE
+   3. L'EN-TÊTE
    ───────────────────────────────────────────────────────────── */
-.bandeau { background: var(--jaune); color: var(--nuit); overflow: hidden; }
-.bandeau__piste {
-  display: flex; width: max-content; padding: 7px 0;
-  font-family: var(--police-tableau); font-size: 13px; font-weight: 700;
-  letter-spacing: 0.04em; text-transform: uppercase; white-space: pre;
-  animation: defile 40s linear infinite;
+.entete {
+  position: sticky; top: 0; z-index: 20; background: rgba(16, 20, 17, 0.94);
+  border-bottom: 1px solid var(--filet); backdrop-filter: blur(8px);
 }
-@keyframes defile { to { transform: translateX(-50%); } }
-
-.entete { position: sticky; top: 0; z-index: 20; background: var(--encre); color: #fff; }
-.entete__ligne { display: flex; align-items: center; justify-content: space-between; gap: 14px; min-height: 64px; }
-.entete__marque {
-  display: inline-flex; align-items: center; gap: 12px; min-height: 44px;
-  color: #fff; text-decoration: none;
-  font-family: var(--police-tableau); font-weight: 700; font-size: 17px; letter-spacing: 0.08em;
+.entete__ligne { position: relative; display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 68px; }
+.entete__nom {
+  font-family: var(--police-titre); font-weight: 700; font-size: 22px; letter-spacing: -0.01em;
+  color: var(--texte); text-decoration: none; min-height: 44px; display: inline-flex; align-items: center;
 }
-.entete__marque:hover { color: #fff; }
-.voie {
-  width: 40px; height: 40px; display: inline-flex; align-items: center; justify-content: center;
-  border-radius: 6px; background: var(--jaune); color: var(--nuit);
-  font-family: var(--police-titre); font-weight: 700; font-size: 28px; letter-spacing: 0;
+.entete__nom:hover { color: var(--texte); }
+.entete__nav { display: flex; align-items: center; gap: 28px; }
+.entete__nav a:not(.bouton) {
+  display: inline-flex; align-items: center; min-height: 44px; color: var(--texte); text-decoration: none; font-weight: 600;
 }
-.entete__nav { display: flex; flex-wrap: wrap; gap: 22px; }
-.entete__nav a {
-  display: inline-flex; align-items: center; min-height: 44px; color: var(--clair);
-  text-decoration: none; font-family: var(--police-tableau); font-size: 14px; font-weight: 700;
-  letter-spacing: 0.06em; text-transform: uppercase;
-}
-.entete__nav a:hover { color: var(--jaune); }
+.entete__nav a:not(.bouton):hover { color: var(--ocre); }
 .entete__menu {
   display: none; width: 44px; height: 44px; align-items: center; justify-content: center;
-  background: transparent; border: 1.5px solid #3a4a6b; border-radius: 10px; color: #fff; cursor: pointer;
+  border: 0; border-radius: 4px; box-shadow: inset 0 0 0 1px var(--filet); background: transparent; color: var(--texte); cursor: pointer;
 }
 
 /* ─────────────────────────────────────────────────────────────
-   4. LE HALL : horloge, nom en palettes, tableau des départs
+   4. L'ACCUEIL
    ───────────────────────────────────────────────────────────── */
-.hall { position: relative; overflow: hidden; background: var(--nuit); color: #fff; }
-.hall__fond {
-  position: absolute; right: -40px; top: 10px; font-family: var(--police-titre); font-weight: 700;
-  font-size: clamp(300px, 40vw, 520px); line-height: 0.8; color: var(--nuit-2); pointer-events: none;
+.accueil {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr));
+  gap: 56px; align-items: center; padding-top: clamp(40px, 7vw, 72px); padding-bottom: clamp(40px, 7vw, 72px);
 }
-.hall__haut {
-  position: relative; display: flex; flex-wrap: wrap; align-items: center;
-  gap: clamp(24px, 5vw, 64px); padding-top: clamp(28px, 6vw, 72px); padding-bottom: 48px;
+.accueil__texte { display: flex; flex-direction: column; gap: 24px; }
+.disponible { display: inline-flex; align-items: center; gap: 8px; font-size: 15px; color: var(--texte-doux); }
+.accueil__titre {
+  font-family: var(--police-titre); font-weight: 700; font-size: clamp(48px, 8vw, 96px);
+  line-height: 0.92; letter-spacing: -0.03em; max-width: 12ch;
 }
-.hall__texte { flex: 1 1 520px; min-width: 0; display: flex; flex-direction: column; gap: 20px; }
-.hall__voie {
-  font-family: var(--police-tableau); font-size: 13px; font-weight: 700;
-  letter-spacing: 0.1em; text-transform: uppercase; color: var(--jaune);
-}
-.hall__nom { display: flex; flex-wrap: wrap; gap: 6px 22px; }
-.hall__titre { font-family: var(--police-titre); font-weight: 700; font-size: clamp(28px, 4vw, 40px); line-height: 1; color: var(--jaune); }
-.hall__accroche { max-width: 34ch; font-size: clamp(17px, 2vw, 22px); line-height: 1.45; color: var(--clair); }
-.hall__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
-.disponible { display: inline-flex; align-items: center; gap: 8px; margin-left: 6px; font-size: 15px; color: var(--clair-doux); }
-.hall__bas { position: relative; padding-bottom: clamp(32px, 7vw, 80px); }
+.accueil__presentation { max-width: 52ch; font-size: clamp(17px, 1.8vw, 19px); line-height: 1.6; color: var(--texte-doux); }
+.faits { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-top: 1px solid var(--filet); }
+.faits div { padding: 16px 16px 0 0; }
+.faits dt { font-size: 13px; color: var(--texte-doux); }
+.faits dd { margin-top: 4px; font-size: 16px; font-weight: 700; }
 
-/* L'horloge : 12 traits tournés autour du centre, la photo au milieu. */
-.horloge {
-  --taille: 260px;
-  position: relative; flex: none; width: var(--taille); height: var(--taille); border-radius: 50%;
-  background: #fff; box-shadow: 0 0 0 10px var(--jaune), 0 18px 40px rgba(0, 0, 0, 0.35);
-}
-.horloge__trait {
-  position: absolute; left: 50%; top: 50%; width: 2px; height: 9px; margin-left: -1px; margin-top: -4.5px;
-  background: var(--nuit); transform: rotate(var(--angle)) translateY(calc(var(--taille) * -0.455));
-}
-.horloge__trait--fort { width: 4px; height: 16px; margin-left: -2px; margin-top: -8px; }
-.horloge__photo {
-  position: absolute; inset: 13%; width: 74%; height: 74%; border-radius: 50%; object-fit: cover;
-}
-
-/* Les palettes : chaque lettre est une plaque coupée en deux. */
-.palettes { display: inline-flex; gap: 6px; }
-.palette {
-  position: relative; display: inline-flex; align-items: center; justify-content: center;
-  width: 62px; height: 86px; border-radius: 6px; background: var(--encre);
-  box-shadow: inset 0 0 0 1px var(--bord-sombre), 0 3px 0 #060b18;
-  font-family: var(--police-titre); font-weight: 700; font-size: 60px; color: #fff;
-}
-.palette::after {
-  content: ''; position: absolute; left: 0; right: 0; top: 50%; height: 2px; background: #060b18;
-}
-.palettes--petite { gap: 2px; align-items: center; }
-.palettes--petite .palette { width: 26px; height: 38px; border-radius: 4px; font-size: 22px; color: var(--jaune); }
-.palettes__deux-points { font-family: var(--police-tableau); color: var(--jaune); font-size: 20px; padding: 0 1px; }
-
-/* Le tableau des départs. La même grille de colonnes sert à l'en-tête
-   et aux lignes : on la décrit une seule fois dans une variable. */
-.departs {
-  --colonnes: 150px minmax(150px, 1.1fr) minmax(180px, 1.7fr) 64px 120px 22px;
-  border-radius: var(--rayon); background: var(--encre); overflow: hidden;
-  box-shadow: 0 0 0 6px #0e1830, 0 30px 60px rgba(0, 0, 0, 0.4);
-}
-.departs__tete {
-  display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 12px;
-  padding: 16px 22px; border-bottom: 3px solid var(--jaune);
-}
-.departs__titre { font-family: var(--police-titre); font-weight: 700; font-size: 34px; letter-spacing: 0.02em; }
-.departs__aide { font-family: var(--police-tableau); font-size: 13px; color: var(--gris-bleu); }
-.departs__colonnes, .depart { display: grid; grid-template-columns: var(--colonnes); gap: 16px; align-items: center; }
-.departs__colonnes {
-  padding: 12px 22px; font-family: var(--police-tableau); font-size: 12px;
-  letter-spacing: 0.08em; text-transform: uppercase; color: var(--gris-bleu);
-}
-.centre { justify-self: center; }
-.depart {
-  min-height: 64px; padding: 8px 22px; border-top: 1px solid var(--encre-ligne);
-  color: var(--clair-doux); text-decoration: none; transition: background 0.15s ease;
-}
-.depart:hover { background: #111c3f; color: var(--clair-doux); }
-.depart--actif { background: #111c3f; }
-.depart__projet { min-width: 0; }
-.depart__code { display: block; font-family: var(--police-tableau); font-weight: 700; font-size: 18px; color: #fff; letter-spacing: 0.05em; }
-.depart__destination-mobile { display: none; }
-.depart__destination { font-size: 16px; }
-.depart__voie {
-  justify-self: center; width: 36px; height: 36px; display: inline-flex; align-items: center; justify-content: center;
-  border-radius: 6px; background: var(--jaune); color: var(--nuit);
-  font-family: var(--police-titre); font-weight: 700; font-size: 22px;
-}
-.etat { display: inline-flex; align-items: center; gap: 8px; font-family: var(--police-tableau); font-size: 13px; font-weight: 700; color: var(--gris-bleu); }
-.etat--en-ligne { color: var(--vert); }
-.etat--en-cours { color: var(--jaune); }
-.etat--en-cours .voyant { background: var(--jaune); box-shadow: 0 0 0 4px rgba(242, 194, 48, 0.25); }
-.depart__fleche { display: inline-flex; color: var(--gris-bleu); }
-
-/* ─────────────────────────────────────────────────────────────
-   5. LES BILLETS (projets)
-   ───────────────────────────────────────────────────────────── */
-.billets {
-  margin-top: 32px; display: grid; gap: 24px;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 500px), 1fr));
-}
-.embarquement {
-  grid-column: 1 / -1; position: relative; display: flex; flex-wrap: wrap;
-  border-radius: 22px; background: var(--papier); overflow: hidden;
-  box-shadow: 0 2px 0 var(--filet-papier), 0 24px 50px rgba(20, 33, 61, 0.14);
-}
-.embarquement__corps { flex: 1.6 1 560px; min-width: 0; padding: clamp(20px, 4vw, 44px); display: flex; flex-direction: column; gap: 26px; }
-.embarquement__tete { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 18px; }
-.embarquement__titre { margin-top: 8px; font-family: var(--police-titre); font-weight: 700; font-size: clamp(54px, 7vw, 76px); line-height: 0.88; }
-.embarquement__sous-titre { margin-top: 10px; font-size: clamp(16px, 2vw, 20px); color: var(--texte-doux); }
-.pastille-etat {
-  display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; border-radius: 999px;
-  background: var(--vert-fond); color: var(--vert-texte);
-  font-family: var(--police-tableau); font-size: 12px; font-weight: 700; text-transform: uppercase;
-}
-.pastille-etat .voyant { width: 9px; height: 9px; box-shadow: none; }
-.pastille-etat--en-cours { background: #fff3c4; color: var(--brun); }
-.pastille-etat--en-cours .voyant { background: var(--jaune); }
-
-/* La chaîne du projet, dessinée comme une mini-ligne de train. */
-.chaine { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); }
-.chaine li {
-  position: relative; display: flex; flex-direction: column; align-items: center; gap: 10px;
-  font-family: var(--police-tableau); font-size: 12px; font-weight: 700; text-transform: uppercase; text-align: center;
-}
-.chaine li::before {
-  content: ''; position: absolute; top: 10px; left: 0; right: 0; height: 6px; background: var(--nuit);
-}
-.chaine li:first-child::before { left: 50%; }
-.chaine li:last-child::before { right: 50%; }
-.chaine__arret {
-  position: relative; width: 26px; height: 26px; border-radius: 50%;
-  background: #fff; border: 5px solid var(--nuit);
-}
-.chaine li.est-actif .chaine__arret { background: var(--jaune); }
-
-.etapes li { display: grid; grid-template-columns: 56px 1fr; gap: 14px; padding: 16px 0; border-top: 1px solid var(--filet-papier); }
-.etapes__numero { font-family: var(--police-titre); font-weight: 700; font-size: 40px; line-height: 0.9; color: var(--bleu-lien); }
-.etapes h4 { font-size: 18px; }
-.etapes p { margin-top: 4px; font-size: 15px; color: var(--texte-doux); }
-
-.embarquement__talon {
-  position: relative; flex: 1 1 300px; padding: clamp(24px, 4vw, 40px) clamp(20px, 3vw, 36px);
-  background: var(--nuit); color: #fff; display: flex; flex-direction: column; gap: 6px;
-  border-left: 3px dashed var(--filet-papier);
-}
-.embarquement__talon .encoche--a { left: -17px; top: -16px; }
-.embarquement__talon .encoche--b { left: -17px; bottom: -16px; }
-.trajet { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; padding-bottom: 14px; }
-.trajet--trois { grid-template-columns: repeat(3, minmax(0, 1fr)); max-width: 520px; padding-top: 8px; }
-.trajet dt, .talon__libelle { font-family: var(--police-tableau); font-size: 11px; text-transform: uppercase; color: var(--gris-bleu); }
-.trajet dd { margin-top: 2px; font-family: var(--police-titre); font-weight: 700; font-size: clamp(20px, 2.4vw, 26px); }
-.chiffres div { display: flex; flex-direction: column-reverse; padding: 16px 0; border-top: 1px solid #2e3d66; }
-.chiffres dd { font-family: var(--police-titre); font-weight: 700; font-size: 46px; line-height: 0.95; color: var(--jaune); }
-.chiffres dt { margin-top: 4px; font-size: 14px; color: var(--clair-doux); }
-.talon__outils { padding-top: 16px; border-top: 1px solid #2e3d66; display: flex; flex-direction: column; gap: 10px; }
-
-.billet {
-  position: relative; display: flex; border-radius: var(--rayon); background: var(--papier); overflow: hidden;
-  box-shadow: 0 2px 0 var(--filet-papier), 0 10px 24px rgba(20, 33, 61, 0.1);
-}
-.billet__corps { flex: 1; min-width: 0; padding: 22px 24px; display: flex; flex-direction: column; gap: 10px; }
-.billet__titre { font-family: var(--police-titre); font-weight: 700; font-size: 30px; line-height: 1; }
-.billet__texte { font-size: 15px; color: var(--texte-doux); }
-.billet__pied { margin-top: auto; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; min-height: 44px; }
-.billet__talon {
-  position: relative; flex: none; width: 92px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
-  border-left: 2px dashed var(--bord-papier); background: var(--jaune); color: var(--nuit);
-}
-.billet__talon .encoche { width: 28px; height: 28px; }
-.billet__talon .encoche--a { left: -15px; top: -14px; }
-.billet__talon .encoche--b { left: -15px; bottom: -14px; }
-.billet__voie-libelle { font-family: var(--police-tableau); font-size: 11px; font-weight: 700; text-transform: uppercase; }
-.billet__voie { font-family: var(--police-titre); font-weight: 700; font-size: 48px; line-height: 1; }
-
-/* ─────────────────────────────────────────────────────────────
-   6. LA LIGNE A (parcours)
-   ───────────────────────────────────────────────────────────── */
-.ligne { background: var(--nuit); color: #fff; }
-.ligne__tete { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 18px; margin-bottom: 40px; }
-.langues { font-family: var(--police-tableau); font-size: 13px; line-height: 1.7; text-transform: uppercase; }
-.langues__libelle { color: var(--clair-doux); }
-
-.gares { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); row-gap: 44px; }
-.gare { position: relative; padding: 58px 22px 0 0; }
-.gare::before { content: ''; position: absolute; left: 0; right: 0; top: 20px; height: 10px; background: var(--jaune); }
-.gare__point {
-  position: absolute; left: 0; top: 9px; width: 32px; height: 32px; border-radius: 50%;
-  background: var(--nuit); border: 6px solid #fff; box-shadow: 0 0 0 3px var(--jaune);
-}
-.gare__annee { font-family: var(--police-tableau); font-size: 13px; font-weight: 700; text-transform: uppercase; color: var(--jaune); }
-.gare__lieu { margin-top: 6px; font-family: var(--police-titre); font-weight: 700; font-size: 34px; line-height: 0.95; text-transform: uppercase; }
-.gare__pays { display: block; margin-top: 2px; font-family: var(--police-tableau); font-size: 12px; font-weight: 500; color: var(--gris-bleu); }
-.gare__texte { margin-top: 10px; font-size: 15px; color: var(--clair); }
-.gare__texte strong { color: #fff; }
-.gare--prochaine { padding-right: 0; }
-.gare--prochaine::before {
-  right: auto; width: 46%; background: repeating-linear-gradient(90deg, var(--jaune) 0 14px, transparent 14px 24px);
-}
-.gare--prochaine .gare__point { left: -4px; top: 3px; width: 44px; height: 44px; border: 0; background: var(--jaune); box-shadow: 0 0 0 8px rgba(242, 194, 48, 0.25); }
-.gare--prochaine .gare__lieu { font-size: 40px; text-transform: none; }
-.gare--prochaine .bouton { margin-top: 14px; }
-
-/* ─────────────────────────────────────────────────────────────
-   7. LES CORRESPONDANCES (compétences)
-   ───────────────────────────────────────────────────────────── */
-.correspondances { display: flex; flex-wrap: wrap; gap: 56px; }
-.correspondances__intro { flex: 1 1 300px; display: flex; flex-direction: column; gap: 14px; }
-.lignes-comp { flex: 2 1 600px; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr)); column-gap: 36px; }
-.lignes-comp li { display: grid; grid-template-columns: 64px 1fr; gap: 18px; padding: 22px 0; border-top: 2px solid var(--nuit); }
-.lignes-comp h3 { margin-bottom: 10px; font-family: var(--police-titre); font-weight: 700; font-size: 28px; line-height: 1; }
-.rond-ligne {
-  width: 56px; height: 56px; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%;
-  background: var(--nuit); color: var(--jaune); box-shadow: inset 0 0 0 3px var(--jaune);
-  font-family: var(--police-titre); font-weight: 700; font-size: 24px;
+/* La photo et son cadre ocre décalé. */
+.accueil__photo { position: relative; justify-self: end; width: min(440px, 100%); }
+.accueil__photo img { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; border-radius: var(--rayon); }
+.accueil__photo::before {
+  content: ''; position: absolute; left: -16px; bottom: -16px; width: 45%; height: 45%;
+  border-left: 3px solid var(--ocre); border-bottom: 3px solid var(--ocre); border-radius: 0 0 0 var(--rayon);
 }
 
 /* ─────────────────────────────────────────────────────────────
-   8. LE BILLET ALLER SIMPLE (contact) ET LE PIED DE PAGE
+   5. LES PROJETS
    ───────────────────────────────────────────────────────────── */
-#contact { padding-top: 0; padding-bottom: clamp(64px, 9vw, 100px); }
-.aller-simple {
-  position: relative; display: flex; flex-wrap: wrap; border-radius: 24px; overflow: hidden;
-  background: var(--encre); color: #fff; box-shadow: 0 24px 50px rgba(20, 33, 61, 0.25);
+.phare {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 360px), 1fr));
+  border-radius: 8px; overflow: hidden; background: var(--surface); box-shadow: inset 0 0 0 1px var(--filet);
 }
-.aller-simple__corps { flex: 1.4 1 480px; padding: clamp(24px, 5vw, 48px); display: flex; flex-direction: column; gap: 18px; }
-.aller-simple__titre { font-family: var(--police-titre); font-weight: 700; font-size: clamp(50px, 7vw, 76px); line-height: 0.88; }
-.aller-simple__texte { max-width: 44ch; font-size: clamp(16px, 2vw, 19px); color: var(--clair); }
-.aller-simple__talon {
-  position: relative; flex: 1 1 340px; padding: clamp(24px, 5vw, 48px) clamp(18px, 4vw, 40px);
-  background: var(--jaune); color: var(--nuit); display: flex; flex-direction: column; justify-content: center; gap: 12px;
-  border-left: 3px dashed var(--encre);
+.phare__texte { padding: clamp(24px, 4vw, 40px); display: flex; flex-direction: column; gap: 16px; }
+.phare__haut { display: inline-flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 700; color: var(--vert); }
+.phare__titre { font-family: var(--police-titre); font-weight: 700; font-size: clamp(40px, 5vw, 60px); line-height: 0.92; letter-spacing: -0.02em; }
+.phare__resume { font-size: 18px; line-height: 1.55; color: var(--texte-doux); }
+.phare__visuel { background: #fff; display: flex; align-items: center; justify-content: center; min-height: 320px; }
+.phare__visuel img { width: 100%; height: 100%; max-height: 560px; object-fit: contain; }
+
+/* La chaîne du projet : chaque étape, séparée par un chevron. */
+.chaine { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font-size: 14px; font-weight: 600; }
+.chaine li { padding: 5px 10px; border-radius: 4px; background: var(--fond); box-shadow: inset 0 0 0 1px var(--filet); }
+.chaine li.chaine__sep { padding: 0; background: none; box-shadow: none; color: var(--texte-doux); }
+.chaine li.est-actif { background: var(--ocre-fond); color: var(--ocre); }
+
+.projet {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+  column-gap: 32px; border-top: 1px solid var(--filet);
 }
-.aller-simple__talon .encoche--a { left: -17px; top: -16px; }
-.aller-simple__talon .encoche--b { left: -17px; bottom: -16px; }
-.contact-mail {
-  display: flex; align-items: center; gap: 12px; min-height: 60px; padding: 0 20px; border-radius: 14px;
-  background: var(--nuit); color: #fff; font-weight: 700; font-size: clamp(15px, 2vw, 18px);
+.projets .projet:last-child { border-bottom: 1px solid var(--filet); }
+.projet__texte { padding: 24px 0; display: flex; flex-direction: column; gap: 10px; }
+.projet__contexte { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; font-size: 14px; color: var(--texte-doux); }
+.projet h3 { font-family: var(--police-titre); font-weight: 700; font-size: 28px; line-height: 1.05; }
+.projet__description { max-width: 48ch; font-size: 16px; color: var(--texte-doux); }
+.projet__visuel {
+  margin: 24px 0; border-radius: var(--rayon); overflow: hidden; box-shadow: inset 0 0 0 1px var(--filet);
+  background: #fff; display: flex; align-items: center; justify-content: center; height: 260px;
+}
+.projet__visuel img { width: 100%; height: 100%; object-fit: contain; }
+
+.schema { width: 100%; height: 100%; background: var(--surface-sombre); font-family: var(--police); }
+.schema__boite { fill: var(--surface); stroke: var(--filet); stroke-width: 1.5; }
+.schema__boite.est-actif { fill: var(--ocre-fond); stroke: var(--ocre); }
+.schema__titre { fill: var(--texte); font-size: 12px; font-weight: 700; }
+.schema__sous { fill: var(--texte-doux); font-size: 10.5px; }
+.schema__fleche { stroke: var(--ocre); stroke-width: 1.8; fill: none; }
+
+/* ─────────────────────────────────────────────────────────────
+   6. COMPÉTENCES ET PARCOURS
+   ───────────────────────────────────────────────────────────── */
+.competences li {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+  gap: 10px 32px; padding: 18px 0; border-top: 1px solid var(--filet);
+}
+.competences li:last-child { border-bottom: 1px solid var(--filet); }
+.competences h3 { font-family: var(--police-titre); font-weight: 700; font-size: 22px; }
+.competences .etiquettes { grid-column: span 2; }
+
+.parcours > li {
+  position: relative; display: grid; grid-template-columns: 130px 1fr; gap: 6px 28px;
+  padding: 0 0 28px 28px; margin-left: 6px; border-left: 2px solid var(--filet);
+}
+.parcours > li:last-child { padding-bottom: 0; }
+.parcours__point {
+  position: absolute; left: -8px; top: 4px; width: 14px; height: 14px; border-radius: 50%;
+  background: var(--fond); box-shadow: inset 0 0 0 2px var(--texte-doux);
+}
+.parcours > li.est-marque .parcours__point { background: var(--ocre); box-shadow: none; }
+.parcours__annee { font-size: 15px; font-weight: 700; color: var(--ocre); }
+.parcours h3 { font-size: 19px; font-weight: 700; }
+.parcours__lieu { margin-top: 2px; font-size: 15px; color: var(--texte-doux); }
+.parcours ul { margin-top: 8px; padding-left: 18px; list-style: disc; font-size: 15px; color: var(--texte-doux); }
+.parcours ul li + li { margin-top: 4px; }
+.langues { font-size: 15px; color: var(--texte-doux); }
+
+/* ─────────────────────────────────────────────────────────────
+   7. CONTACT ET PIED DE PAGE
+   ───────────────────────────────────────────────────────────── */
+.contact-section { padding-top: clamp(40px, 6vw, 56px); padding-bottom: clamp(72px, 10vw, 110px); }
+.contact {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 360px), 1fr)); gap: 32px; align-items: end;
+  padding: clamp(28px, 5vw, 56px); border-radius: 8px; background: var(--ocre); color: var(--encre-ocre);
+}
+.contact h2 { font-family: var(--police-titre); font-weight: 700; font-size: clamp(40px, 6vw, 72px); line-height: 0.9; letter-spacing: -0.02em; }
+.contact > div > p { margin-top: 14px; max-width: 40ch; font-size: 18px; }
+.contact__liens { display: flex; flex-direction: column; gap: 10px; }
+.contact__mail {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px; min-height: 60px; padding: 0 20px;
+  border-radius: 4px; background: var(--encre-ocre); color: var(--texte); font-weight: 700; font-size: clamp(15px, 2vw, 18px);
   text-decoration: none; overflow-wrap: anywhere;
 }
-.contact-mail:hover { color: #fff; background: var(--nuit-2); }
-.contact-reseaux { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
-.contact-reseaux a {
-  display: flex; align-items: center; justify-content: space-between; min-height: 56px; padding: 0 18px;
-  border-radius: 14px; box-shadow: inset 0 0 0 2px var(--nuit); color: var(--nuit); font-weight: 700; text-decoration: none;
+.contact__mail:hover { color: var(--ocre); }
+.contact__autres { display: grid; grid-template-columns: repeat(auto-fit, minmax(90px, 1fr)); gap: 10px; }
+.contact__autres a {
+  display: flex; align-items: center; justify-content: center; min-height: 52px; border-radius: 4px;
+  box-shadow: inset 0 0 0 2px var(--encre-ocre); color: var(--encre-ocre); font-weight: 700; text-decoration: none;
 }
-.contact-reseaux a:hover { background: var(--nuit); color: #fff; }
+.contact__autres a:hover { background: var(--encre-ocre); color: var(--ocre); }
 
-.pied { background: var(--encre); }
-.pied p { padding-top: 22px; padding-bottom: 22px; font-family: var(--police-tableau); font-size: 12px; color: var(--gris-bleu); text-transform: uppercase; }
+.pied { border-top: 1px solid var(--filet); }
+.pied p { padding-top: 22px; padding-bottom: 22px; font-size: 14px; color: var(--texte-doux); }
 
 /* ─────────────────────────────────────────────────────────────
-   9. L'ASSISTANT : le bouton flottant et le « guichet »
+   8. L'ASSISTANT IA
    ───────────────────────────────────────────────────────────── */
 .assistant__bouton {
   position: fixed; z-index: 30;
   right: max(16px, env(safe-area-inset-right, 0px)); bottom: calc(16px + env(safe-area-inset-bottom, 0px));
-  display: inline-flex; align-items: center; gap: 12px; min-height: 58px; padding: 0 22px 0 8px;
-  font: inherit; font-size: 16px; font-weight: 700; background: #fff; color: var(--nuit); border: 0; border-radius: 999px;
-  box-shadow: 0 0 0 3px var(--jaune), 0 12px 28px rgba(0, 0, 0, 0.35); cursor: pointer;
+  display: inline-flex; align-items: center; gap: 10px; min-height: 52px; padding: 0 20px;
+  border: 0; border-radius: 4px; background: var(--texte); color: var(--fond);
+  font: inherit; font-size: 15px; font-weight: 700; cursor: pointer; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
 }
-.assistant__rond { width: 44px; height: 44px; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; background: var(--nuit); color: var(--jaune); }
-.assistant__textes { display: flex; flex-direction: column; align-items: flex-start; line-height: 1.1; }
-.assistant__petit { font-family: var(--police-tableau); font-size: 11px; color: var(--bleu-lien); text-transform: uppercase; }
-.assistant__voile { position: fixed; inset: 0; z-index: 39; background: rgba(6, 11, 24, 0.6); }
+.assistant__bouton:hover { background: var(--ocre); color: var(--encre-ocre); }
+/* Caché tant que l'accueil occupe l'écran : il ne recouvre jamais le premier texte lu. */
+.assistant__bouton.est-cache { opacity: 0; transform: translateY(12px); pointer-events: none; }
+.assistant__bouton { transition: opacity 0.2s ease, transform 0.2s ease; }
+/* Au clavier, il reste toujours atteignable : il réapparaît dès qu'il reçoit le focus. */
+.assistant__bouton.est-cache:focus-visible { opacity: 1; transform: none; pointer-events: auto; }
+.assistant__voile { position: fixed; inset: 0; z-index: 39; background: rgba(5, 7, 6, 0.65); }
 body.assistant-ouvert { overflow: hidden; }
 
 .guichet {
   position: fixed; z-index: 40; right: 24px; top: 24px; bottom: 24px; width: min(440px, calc(100vw - 48px));
-  display: flex; flex-direction: column; border-radius: 20px; overflow: hidden; background: var(--fond);
-  box-shadow: 0 0 0 3px var(--jaune), 0 30px 60px rgba(0, 0, 0, 0.45);
+  display: flex; flex-direction: column; border-radius: 8px; overflow: hidden; background: var(--fond);
+  box-shadow: inset 0 0 0 1px var(--filet), 0 30px 60px rgba(0, 0, 0, 0.55);
 }
 .guichet:focus { outline: none; }
 .guichet__tete {
   flex: none; display: flex; align-items: center; gap: 12px; padding: 14px 16px;
-  padding-top: calc(14px + env(safe-area-inset-top, 0px));
-  background: var(--nuit); color: #fff; border-bottom: 3px solid var(--jaune);
+  padding-top: calc(14px + env(safe-area-inset-top, 0px)); background: var(--surface); border-bottom: 1px solid var(--filet);
 }
-.guichet__tete img { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; box-shadow: 0 0 0 3px var(--jaune); }
+.guichet__tete img { width: 44px; height: 44px; border-radius: 4px; object-fit: cover; }
 .guichet__titres { flex: 1; min-width: 0; }
-.guichet__petit { font-family: var(--police-tableau); font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--jaune); }
-.guichet__titres h2 { margin-top: 2px; font-family: var(--police-titre); font-weight: 700; font-size: 22px; line-height: 1; }
-.guichet__sous { margin-top: 2px; font-size: 12px; color: var(--clair-doux); }
+.guichet__titres h2 { font-family: var(--police-titre); font-weight: 700; font-size: 22px; line-height: 1; }
+.guichet__sous { margin-top: 4px; font-size: 13px; color: var(--texte-doux); }
 .guichet__fermer {
   width: 44px; height: 44px; flex: none; display: inline-flex; align-items: center; justify-content: center;
-  border: 1.5px solid #3a4a6b; border-radius: 10px; background: transparent; color: #fff; cursor: pointer;
+  border: 0; border-radius: 4px; box-shadow: inset 0 0 0 1px var(--filet); background: transparent; color: var(--texte); cursor: pointer;
 }
 .guichet__fil { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 16px 14px; display: flex; flex-direction: column; gap: 14px; }
 
-.annonce { align-self: flex-start; max-width: 88%; display: flex; flex-direction: column; gap: 8px; }
-.annonce__libelle { font-family: var(--police-tableau); font-size: 10px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--bleu-lien); }
+.annonce { align-self: flex-start; max-width: 90%; display: flex; flex-direction: column; gap: 8px; }
 .annonce__bulle {
-  padding: 12px 14px; border-radius: 4px 16px 16px 16px; background: #fff; box-shadow: 0 2px 0 var(--filet-papier);
-  font-size: 15px; line-height: 1.5; overflow-wrap: anywhere;
+  padding: 12px 14px; border-radius: 4px 12px 12px 12px; background: var(--surface);
+  box-shadow: inset 0 0 0 1px var(--filet); font-size: 15px; line-height: 1.5; overflow-wrap: anywhere;
 }
 .annonce__email {
-  display: inline-flex; align-items: center; gap: 8px; min-height: 44px; margin-top: 8px; padding: 0 14px;
-  border-radius: 999px; background: var(--nuit); color: #fff; font-weight: 700; font-size: 14px; text-decoration: none;
+  display: inline-flex; align-items: center; gap: 8px; min-height: 44px; margin-top: 10px; padding: 0 14px;
+  border-radius: 4px; background: var(--ocre); color: var(--encre-ocre); font-weight: 700; font-size: 14px; text-decoration: none;
 }
-.annonce__email:hover { color: #fff; background: var(--nuit-2); }
+.annonce__email:hover { background: var(--ocre-clair); color: var(--encre-ocre); }
 .annonce__sources { display: flex; flex-direction: column; gap: 6px; }
-.annonce__sources .annonce__libelle { color: var(--texte-discret); }
+.annonce__libelle { font-size: 12px; font-weight: 700; color: var(--texte-doux); }
 .annonce__billets { display: flex; flex-wrap: wrap; gap: 6px; }
-.billet-source {
-  display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 4px 10px 4px 4px; border-radius: 8px;
-  background: var(--papier); box-shadow: inset 0 0 0 1px var(--bord-papier); color: var(--nuit); text-decoration: none;
+.source {
+  display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 4px 10px 4px 4px; border-radius: 4px;
+  background: var(--surface); box-shadow: inset 0 0 0 1px var(--filet); color: var(--texte); text-decoration: none;
 }
-.billet-source:hover { color: var(--nuit); box-shadow: inset 0 0 0 2px var(--nuit); }
-.billet-source__icone { width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; border-radius: 6px; background: var(--jaune); }
-.billet-source__textes { display: flex; flex-direction: column; line-height: 1.1; font-size: 13px; font-weight: 700; }
-.billet-source__sous { font-family: var(--police-tableau); font-size: 10px; font-weight: 500; color: var(--brun); }
+.source:hover { color: var(--texte); box-shadow: inset 0 0 0 1.5px var(--ocre); }
+.source__icone { width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; border-radius: 3px; background: var(--ocre-fond); color: var(--ocre); }
+.source__textes { display: flex; flex-direction: column; line-height: 1.15; font-size: 13px; font-weight: 700; }
+.source__sous { font-size: 11px; font-weight: 600; color: var(--texte-doux); }
 .question-visiteur {
-  align-self: flex-end; max-width: 82%; padding: 10px 14px; border-radius: 16px 4px 16px 16px;
-  background: var(--nuit); color: #fff; font-size: 15px; line-height: 1.45; overflow-wrap: anywhere;
+  align-self: flex-end; max-width: 82%; padding: 10px 14px; border-radius: 12px 4px 12px 12px;
+  background: var(--ocre); color: var(--encre-ocre); font-size: 15px; line-height: 1.45; overflow-wrap: anywhere;
 }
 .suggestions { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; }
 .suggestions button {
-  min-height: 44px; padding: 0 16px; border-radius: 999px; border: 1.5px solid var(--nuit); background: transparent;
-  font: inherit; font-size: 14px; font-weight: 600; color: var(--nuit); text-align: left; cursor: pointer;
+  min-height: 44px; padding: 0 14px; border-radius: 4px; border: 0; box-shadow: inset 0 0 0 1px var(--filet);
+  background: transparent; font: inherit; font-size: 14px; font-weight: 600; color: var(--texte); text-align: left; cursor: pointer;
 }
-.suggestions button:hover { background: var(--nuit); color: #fff; }
-.annonce__attente { display: inline-flex; align-items: center; gap: 10px; font-family: var(--police-tableau); font-size: 12px; color: var(--texte-discret); }
-.annonce__attente .voyant { background: var(--jaune); box-shadow: 0 0 0 4px rgba(242, 194, 48, 0.25); animation: respire 1.2s ease-in-out infinite; }
-@keyframes respire { 50% { opacity: 0.35; } }
+.suggestions button:hover { box-shadow: inset 0 0 0 1.5px var(--ocre); color: var(--ocre); }
+.annonce__attente { display: inline-flex; align-items: center; gap: 10px; font-size: 13px; color: var(--texte-doux); }
+.annonce__attente .point { color: var(--ocre); animation: respire 1.2s ease-in-out infinite; }
+@keyframes respire { 50% { opacity: 0.3; } }
 
 .guichet__pied {
   flex: none; padding: 12px 14px 14px; padding-bottom: calc(14px + env(safe-area-inset-bottom, 0px));
-  background: #fff; border-top: 1px solid var(--filet-papier); display: flex; flex-direction: column; gap: 8px;
+  background: var(--surface); border-top: 1px solid var(--filet); display: flex; flex-direction: column; gap: 8px;
 }
 .guichet__saisie { display: flex; gap: 8px; align-items: center; }
 .guichet__saisie input {
-  flex: 1; min-width: 0; min-height: 48px; padding: 0 14px; border-radius: 999px; border: 1.5px solid var(--bord-papier);
-  background: #fff; font: inherit; font-size: 16px; color: var(--nuit);
+  flex: 1; min-width: 0; min-height: 48px; padding: 0 14px; border-radius: 4px; border: 1.5px solid var(--filet);
+  background: var(--fond); font: inherit; font-size: 16px; color: var(--texte);
 }
-.guichet__saisie input:disabled { background: var(--fond); color: var(--texte-discret); }
+.guichet__saisie input::placeholder { color: var(--texte-doux); }
+.guichet__saisie input:disabled { opacity: 0.6; }
 .guichet__saisie button {
   width: 48px; height: 48px; flex: none; display: inline-flex; align-items: center; justify-content: center;
-  border: 0; border-radius: 50%; background: var(--nuit); color: var(--jaune); cursor: pointer;
+  border: 0; border-radius: 4px; background: var(--ocre); color: var(--encre-ocre); cursor: pointer;
 }
-.guichet__saisie button:disabled { background: var(--clair-doux); color: var(--texte-discret); cursor: default; }
-.guichet__note { font-size: 12px; line-height: 1.4; color: var(--texte-discret); }
+.guichet__saisie button:disabled { background: var(--filet); color: var(--texte-doux); cursor: default; }
+.guichet__note { font-size: 12px; line-height: 1.4; color: var(--texte-doux); }
 
 /* ─────────────────────────────────────────────────────────────
-   10. LE TÉLÉPHONE : on réorganise, on ne rétrécit pas
-   (règle unique à 720 px, appliquée à toutes les sections)
+   9. LE TÉLÉPHONE : une seule règle, appliquée à toutes les sections
    ───────────────────────────────────────────────────────────── */
 @media (max-width: 720px) {
   body { font-size: 16px; }
-  .cache-mobile { display: none !important; }
-
   .entete__menu { display: inline-flex; }
   .entete__nav {
-    display: none; position: absolute; left: 0; right: 0; top: 100%;
-    flex-direction: column; gap: 0; padding: 8px var(--marge) 16px; background: var(--encre);
-    border-bottom: 3px solid var(--jaune);
+    display: none; position: absolute; left: 0; right: 0; top: 100%; flex-direction: column; align-items: stretch;
+    gap: 0; padding: 8px var(--marge) 16px; background: var(--fond); border-bottom: 1px solid var(--filet);
   }
   .entete__nav.est-ouvert { display: flex; }
-  .entete__ligne { position: relative; }
+  .entete__nav .bouton { margin-top: 8px; }
 
-  .horloge { --taille: 140px; box-shadow: 0 0 0 6px var(--jaune), 0 12px 28px rgba(0, 0, 0, 0.35); }
-  .hall__haut { gap: 20px; padding-bottom: 28px; }
-  .hall__texte { flex-basis: 100%; gap: 14px; }
-  .hall__nom { gap: 4px 10px; }
-  .palette { width: 40px; height: 56px; font-size: 38px; border-radius: 5px; }
-  .palettes { gap: 4px; }
-  .hall__actions .bouton { flex: 1 1 140px; }
-  .disponible { order: -1; flex-basis: 100%; margin-left: 0; }
-  .hall__bas { padding-left: 10px; padding-right: 10px; }
+  .accueil { gap: 28px; }
+  .accueil__photo { order: -1; justify-self: start; width: 128px; }
+  .accueil__photo::before { display: none; }
+  .accueil__photo img { box-shadow: -8px 8px 0 var(--ocre); }
+  .faits { grid-template-columns: 1fr 1fr; }
 
-  .departs { --colonnes: 86px minmax(0, 1fr) 40px 30px; box-shadow: 0 0 0 4px #0e1830; border-radius: 14px; }
-  .departs__colonnes { display: none; }
-  .departs__tete { padding: 10px 12px; }
-  .departs__titre { font-size: 26px; }
-  .departs__aide { font-size: 10px; }
-  .depart { gap: 10px; min-height: 58px; padding: 6px 12px; }
-  .depart__code { font-size: 14px; }
-  .depart__destination-mobile { display: block; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .palettes--petite .palette { width: 17px; height: 26px; font-size: 15px; }
-  .palettes__deux-points { font-size: 13px; }
-  .depart__voie { width: 30px; height: 30px; font-size: 19px; }
-  .etat { justify-self: center; }
-  .seul-mobile { display: inline; }
-  .etat { font-size: 10px; }
+  .phare__visuel { min-height: 260px; }
+  .projet__visuel { height: 220px; margin-top: 0; }
+  .competences .etiquettes { grid-column: auto; }
+  .parcours > li { grid-template-columns: 1fr; }
 
-  /* Les talons passent SOUS le billet au lieu d'être à côté. */
-  .embarquement__talon { border-left: 0; border-top: 3px dashed var(--filet-papier); }
-  .embarquement__talon .encoche--a { left: -13px; top: -15px; }
-  .embarquement__talon .encoche--b { left: auto; right: -13px; top: -15px; bottom: auto; }
-  .chaine li { font-size: 9px; gap: 8px; }
-  .chaine li::before { top: 8px; height: 5px; }
-  .chaine__arret { width: 21px; height: 21px; border-width: 4px; }
-  .etapes li { grid-template-columns: 40px 1fr; gap: 10px; padding: 12px 0; }
-  .etapes__numero { font-size: 30px; }
-  .chiffres { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
-  .chiffres dd { font-size: 30px; }
-  .chiffres dt { font-size: 12px; }
-  .rangee-boutons .bouton { flex: 1 1 0; }
-  .billet__talon { width: 64px; }
-  .billet__voie { font-size: 38px; }
-
-  .aller-simple__talon { border-left: 0; border-top: 3px dashed var(--encre); }
-  .aller-simple__talon .encoche--a { left: -13px; top: -15px; }
-  .aller-simple__talon .encoche--b { left: auto; right: -13px; top: -15px; bottom: auto; }
-
-  /* La ligne de train devient verticale. */
-  .gares { grid-template-columns: 1fr; row-gap: 0; }
-  .gare { padding: 0 0 28px 48px; }
-  .gare::before { left: 10px; right: auto; top: 0; bottom: 0; width: 10px; height: auto; }
-  .gare__point { top: 0; }
-  .gare__lieu { font-size: 30px; }
-  .gare--prochaine { padding-bottom: 0; }
-  .gare--prochaine::before {
-    width: 10px; bottom: auto; height: 40px; top: -40px; left: 10px;
-    background: repeating-linear-gradient(180deg, var(--jaune) 0 10px, transparent 10px 18px);
-  }
-  .gare--prochaine .gare__point { left: -3px; top: -2px; width: 36px; height: 36px; }
-  .gare:nth-last-child(2)::before { bottom: 40px; }
-  .gare--prochaine .gare__lieu { font-size: 34px; }
-
-  .correspondances { gap: 14px; }
-  .lignes-comp li { grid-template-columns: 48px 1fr; gap: 12px; padding: 16px 0; }
-  .rond-ligne { width: 44px; height: 44px; font-size: 20px; }
-  .lignes-comp h3 { font-size: 23px; }
-
-  .assistant__bouton { min-height: 54px; padding-right: 16px; font-size: 15px; }
-  .guichet { inset: 0; width: auto; border-radius: 0; box-shadow: none; }
+  .assistant__suite { display: none; }
+  .guichet { inset: 0; width: auto; border-radius: 0; }
   .assistant__voile { display: none; }
-  .assistant__rond { width: 40px; height: 40px; }
-  main { padding-bottom: 72px; }
+  main { padding-bottom: 64px; }
 }
 
-/* Le visiteur a demandé moins d'animations : on les coupe toutes,
-   d'un seul coup, plutôt qu'au cas par cas. */
+/* Moins d'animations demandées : on les coupe toutes d'un coup. */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
-  .bandeau__piste { width: auto; white-space: normal; padding-left: var(--marge); padding-right: var(--marge); }
-  .bandeau__piste span + span { display: none; }
 }

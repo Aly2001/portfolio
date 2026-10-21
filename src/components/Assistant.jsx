@@ -27,10 +27,9 @@ function BoutonEmail() {
   return <a className="annonce__email" href={`mailto:${profil.email}`}><Icone nom="mail" taille={16} />Écrire à Aly</a>
 }
 
-function Annonce({ m, onSource }) {
+function Reponse({ m, onSource }) {
   return (
     <div className="annonce">
-      <span className="annonce__libelle">Annonce</span>
       <div className="annonce__bulle">
         <p>{m.texte}</p>
         {(AVEC_EMAIL.has(m.statut) || m.famille === 'revoir') && <BoutonEmail />}
@@ -40,9 +39,9 @@ function Annonce({ m, onSource }) {
           <span className="annonce__libelle">Sources</span>
           <div className="annonce__billets">
             {m.sources.map((s) => (
-              <a key={s.id} href={s.ancre} className="billet-source" onClick={onSource}>
-                <span className="billet-source__icone" aria-hidden="true"><Icone nom="billet" taille={16} /></span>
-                <span className="billet-source__textes"><span className="billet-source__sous">{s.sous}</span>{s.libelle}</span>
+              <a key={s.id} href={s.ancre} className="source" onClick={onSource}>
+                <span className="source__icone" aria-hidden="true"><Icone nom="lien" taille={15} /></span>
+                <span className="source__textes"><span className="source__sous">{s.sous}</span>{s.libelle}</span>
               </a>
             ))}
           </div>
@@ -65,6 +64,16 @@ export default function Assistant() {
   const bas = useRef(null)
   const bouton = useRef(null)
   const rendreFocus = useRef(false)
+  const [accueilVisible, setAccueilVisible] = useState(true)
+
+  // Le bouton n'apparaît qu'une fois l'accueil à moitié dépassé.
+  useEffect(() => {
+    const accueil = document.getElementById('accueil')
+    if (!accueil || !('IntersectionObserver' in window)) { setAccueilVisible(false); return undefined }
+    const obs = new IntersectionObserver(([e]) => setAccueilVisible(e.intersectionRatio > 0.5), { threshold: [0, 0.5, 1] })
+    obs.observe(accueil)
+    return () => obs.disconnect()
+  }, [])
 
   // Ouverture : focus dans le panneau, Échap pour fermer, et on bloque le
   // défilement de la page derrière (sur téléphone le panneau est plein écran).
@@ -83,7 +92,7 @@ export default function Assistant() {
   useEffect(() => { bas.current?.scrollIntoView({ block: 'end' }) }, [messages, attente])
 
   // Après fermeture, le focus revient sur le bouton (règle d'accessibilité),
-  // sauf si on a cliqué une source : on laisse alors la page aller au billet.
+  // sauf si on a cliqué une source : on laisse alors la page aller à la section.
   useEffect(() => {
     if (!ouvert && rendreFocus.current) bouton.current?.focus()
     rendreFocus.current = false
@@ -138,9 +147,8 @@ export default function Assistant() {
           <div className="guichet__tete">
             <img src="/photo-aly-256.webp" alt="" width="44" height="44" />
             <div className="guichet__titres">
-              <p className="guichet__petit">Information voyageurs</p>
-              <h2 id="titre-guichet">Une question sur Aly ?</h2>
-              <p className="guichet__sous">Répond à partir de mon CV et de mes projets</p>
+              <h2 id="titre-guichet">Assistant IA</h2>
+              <p className="guichet__sous">Il répond à partir de mon CV et de mes projets</p>
             </div>
             <button type="button" className="guichet__fermer" aria-label="Fermer l'assistant" onClick={fermer}><Icone nom="fermer" taille={20} /></button>
           </div>
@@ -149,14 +157,14 @@ export default function Assistant() {
             {messages.map((m, i) =>
               m.de === 'visiteur'
                 ? <p key={i} className="question-visiteur">{m.texte}</p>
-                : <Annonce key={i} m={m} onSource={allerALaSource} />,
+                : <Reponse key={i} m={m} onSource={allerALaSource} />,
             )}
             {montrerSuggestions && (
               <div className="suggestions">
                 {SUGGESTIONS.map((s) => <button key={s} type="button" onClick={() => poser(s)}>{s}</button>)}
               </div>
             )}
-            {attente && <p className="annonce__attente"><span className="voyant" aria-hidden="true" />L'annonce arrive…</p>}
+            {attente && <p className="annonce__attente"><span className="point" aria-hidden="true" />L'assistant cherche dans le CV…</p>}
             <div ref={bas} />
           </div>
 
@@ -176,12 +184,10 @@ export default function Assistant() {
       )}
 
       {!ouvert && (
-        <button ref={bouton} type="button" className="assistant__bouton" onClick={() => setOuvert(true)}>
-          <span className="assistant__rond"><Icone nom="bulle" taille={20} /></span>
-          <span className="assistant__textes">
-            <span className="assistant__petit">Information voyageurs</span>
-            Une question sur moi ?
-          </span>
+        <button ref={bouton} type="button" className={`assistant__bouton${accueilVisible ? ' est-cache' : ''}`}
+          onClick={() => setOuvert(true)}>
+          <Icone nom="bulle" taille={18} />
+          <span>Assistant IA<span className="assistant__suite"> : une question sur moi ?</span></span>
         </button>
       )}
     </>

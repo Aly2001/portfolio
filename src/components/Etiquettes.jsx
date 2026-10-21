@@ -1,7 +1,3 @@
-export default function Etiquettes({ liste, sombre = false }) {
-  return (
-    <ul className={`etiquettes${sombre ? ' etiquettes--sombre' : ''}`}>
-      {liste.map((t) => <li key={t}>{t}</li>)}
-    </ul>
-  )
+export default function Etiquettes({ liste }) {
+  return <ul className="etiquettes">{liste.map((t) => <li key={t}>{t}</li>)}</ul>
 }

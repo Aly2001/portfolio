@@ -13,16 +13,16 @@ const ajouter = (id, source, texte) => {
   fiches.push({ id, source, texte, empreinte: createHash('sha256').update(texte).digest('hex').slice(0, 16) })
 }
 
-ajouter('profil', { libelle: 'Présentation', sous: 'ACCUEIL', ancre: '#hall' },
-  `${profil.nom} est ${profil.titre}. ${profil.accroche} ` +
-  'Il est étudiant en Master 2 Ingénierie des Systèmes Complexes à l\'EILCO (Calais). ' +
+ajouter('profil', { libelle: 'Présentation', sous: 'Accueil', ancre: '#accueil' },
+  `${profil.nom} est ${profil.titre}, étudiant en Master 2 Ingénierie des Systèmes Complexes à l'EILCO (Calais). ` +
+  `Sa devise : « ${profil.accroche} » Il collecte, nettoie et modélise les données, puis en fait des outils que les gens utilisent vraiment. ` +
   'Domaines : data analyse, data science, data engineering, machine learning et IA générative.')
 
-ajouter('disponibilite', { libelle: 'Me contacter', sous: 'CONTACT', ancre: '#contact' },
-  `${profil.nom} est ${profil.disponible ? 'ouvert aux opportunités : stage, projet data ou collaboration' : 'actuellement en poste'}. ` +
-  `${profil.mobilite}. Pour en discuter, le plus simple est de lui écrire à ${profil.email}.`)
+ajouter('disponibilite', { libelle: 'Me contacter', sous: 'Contact', ancre: '#contact' },
+  `${profil.nom} est ${profil.disponible ? 'ouvert aux opportunités : stage, projet data ou collaboration' : 'actuellement en poste'}, ` +
+  `mobile ${profil.mobilite}. Il est basé à ${profil.ville}. Pour en discuter, le plus simple est de lui écrire à ${profil.email}.`)
 
-ajouter('contact', { libelle: 'Me contacter', sous: 'CONTACT', ancre: '#contact' },
+ajouter('contact', { libelle: 'Me contacter', sous: 'Contact', ancre: '#contact' },
   `Pour contacter ${profil.nom} : e-mail ${profil.email}, LinkedIn ${profil.linkedin}, GitHub ${profil.github}. ` +
   'Son CV est téléchargeable sur le site.')
 
@@ -30,35 +30,32 @@ ajouter('contact', { libelle: 'Me contacter', sous: 'CONTACT', ancre: '#contact'
 // Règle générale : une fiche trop longue « dilue » son sens, et la
 // recherche la retrouve moins bien (Quai Nord n'atteignait que 0,55).
 // Toutes les fiches d'un projet pointent vers le même billet.
-projets.forEach((p, i) => {
-  const source = { libelle: p.titre, sous: `BILLET ${i + 1}`, ancre: `#billet-${p.id}` }
+projets.forEach((p) => {
+  const source = { libelle: p.titre, sous: 'Projet', ancre: `#projet-${p.id}` }
   const nom = `Le projet ${p.titre}`
-  const resume = [`${nom}${p.contexte ? ` (${p.contexte})` : ''} : ${p.sousTitre ?? p.texte}`]
-  resume.push(`État : ${ETATS[p.etat].long.toLowerCase()}.`)
+  const resume = [`${nom} (${p.contexte}) : ${p.resume ? p.resume + ' ' : ''}${p.texte}`]
+  resume.push(`État : ${ETATS[p.etat].toLowerCase()}.`)
   if (p.site) resume.push(`Site en ligne : ${p.site}.`)
-  if (p.code_url) resume.push(`Code : ${p.code_url}.`)
+  resume.push(p.code ? `Code : ${p.code}.` : 'Le code n\'est pas encore publié.')
   ajouter(`projet-${p.id}`, source, resume.join(' '))
-
   if (p.etapes) {
     ajouter(`projet-${p.id}-demarche`, source,
       `${nom}, la démarche. ` + p.etapes.map((e) => `${e.titre} : ${e.texte}`).join(' '))
   }
   if (p.complement) ajouter(`projet-${p.id}-complement`, source, `${nom}, en détail. ${p.complement}`)
-  const technique = [`${nom}, les outils : ${p.outils.join(', ')}.`]
-  if (p.chiffres) technique.push('Chiffres : ' + p.chiffres.map((c) => `${c.valeur} ${c.libelle}`).join(', ') + '.')
-  ajouter(`projet-${p.id}-outils`, source, technique.join(' '))
+  ajouter(`projet-${p.id}-outils`, source, `${nom}, les outils : ${p.outils.join(', ')}.`)
 })
 
-parcours.forEach((g) => {
-  ajouter(`parcours-${g.id}`, { libelle: g.lieu, sous: 'LIGNE A', ancre: `#gare-${g.id}` },
-    `${g.annee}, ${g.lieu} (${g.pays}) : ${g.titre}, ${g.detail}.`)
+parcours.forEach((e) => {
+  ajouter(`parcours-${e.id}`, { libelle: e.titre, sous: 'Parcours', ancre: `#etape-${e.id}` },
+    `${e.annee} : ${e.titre}, ${e.lieu}.` + (e.points ? ' ' + e.points.join(' ; ') + '.' : ''))
 })
 
-ajouter('langues', { libelle: 'Langues', sous: 'LIGNE A', ancre: '#ligne' },
+ajouter('langues', { libelle: 'Langues', sous: 'Parcours', ancre: '#parcours' },
   `Langues parlées par ${profil.nom} : ${langues.join(', ')}.`)
 
 competences.forEach((c) => {
-  ajouter(`competences-${c.pastille.toLowerCase()}`, { libelle: c.domaine, sous: 'CORRESPONDANCES', ancre: '#correspondances' },
+  ajouter(`competences-${c.id}`, { libelle: c.domaine, sous: 'Compétences', ancre: `#competence-${c.id}` },
     `Compétences en ${c.domaine.toLowerCase()} : ${c.outils.join(', ')}.`)
 })
 
