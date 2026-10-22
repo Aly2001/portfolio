@@ -93,10 +93,10 @@ export const projets = [
     etat: 'termine',
     titre: 'Réputation client par le NLP',
     contexte: 'Projet personnel · 2025',
-    texte: "568 454 avis Amazon analysés : sentiment, sujets d'insatisfaction et évolution dans le temps.",
+    texte: "568 454 avis Amazon analysés : sentiment (93,5 % d'exactitude), 5 sujets d'insatisfaction et évolution mensuelle.",
     visuel: { image: '/projets/avis-notes.webp', alt: 'Répartition des notes de 568 454 avis Amazon', largeur: 1000, hauteur: 565 },
     code: GH + 'avis-clients-projet',
-    outils: ['NLP', 'TF-IDF', 'Régression logistique', 'LDA', 'Séries temporelles'],
+    outils: ['NLP', 'TF-IDF', 'Régression logistique', 'LDA', 'Pandas'],
   },
   {
     id: 'attrition',
@@ -130,23 +130,32 @@ export const projets = [
   },
 ]
 
-// Du plus récent au plus ancien. « points » = détails mis en avant (le stage).
+// Du plus récent au plus ancien. Chaque étape indique sa ville ET son pays.
+// « points » = détails mis en avant (le stage) ; « enCours » = étape actuelle.
 export const parcours = [
-  { id: 'calais', annee: '2025 – 2027', titre: 'Master 2 Ingénierie des Systèmes Complexes', lieu: 'EILCO, Calais' },
+  { id: 'calais', annee: '2025 – 2027', titre: 'Master 2 Ingénierie des Systèmes Complexes',
+    etablissement: 'EILCO', ville: 'Calais', pays: 'France', enCours: true },
   {
     id: 'bank-al-maghreb',
     annee: 'Été 2024',
     titre: 'Stagiaire Data Scientist',
-    lieu: 'Bank Al-Maghreb, Meknès (Maroc)',
+    etablissement: 'Bank Al-Maghreb',
+    ville: 'Meknès',
+    pays: 'Maroc',
     points: [
       'Un modèle de prédiction pour évaluer le risque client',
       "L'analyse des données en SQL et Python, avec des mises à jour automatisées",
       "Des tableaux de bord Power BI pour l'aide à la décision",
     ],
   },
-  { id: 'meknes', annee: '2022 – 2024', titre: 'Licence Mathématiques-Informatique', lieu: 'Faculté des Sciences Moulay Ismail, Meknès' },
-  { id: 'kenieba', annee: '2021', titre: 'Baccalauréat scientifique', lieu: 'Lycée LKBA, Kéniéba (Mali)' },
+  { id: 'meknes', annee: '2022 – 2024', titre: 'Licence Mathématiques-Informatique',
+    etablissement: 'Faculté des Sciences Moulay Ismail', ville: 'Meknès', pays: 'Maroc' },
+  { id: 'kenieba', annee: '2021', titre: 'Baccalauréat scientifique',
+    etablissement: 'Lycée LKBA', ville: 'Kéniéba', pays: 'Mali' },
 ]
+
+// Une seule façon d'écrire un lieu, partout (site et assistant) : « EILCO, Calais (France) ».
+export const lieu = (e) => `${e.etablissement}, ${e.ville}\u00a0(${e.pays})` // la ville et son pays ne se séparent jamais
 
 export const langues = ['Français courant (C2)', 'Anglais intermédiaire', 'Bambara (langue maternelle)']
 

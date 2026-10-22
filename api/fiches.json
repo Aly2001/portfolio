@@ -116,8 +116,8 @@
       "sous": "Projet",
       "ancre": "#projet-avis-amazon"
     },
-    "texte": "Le projet Réputation client par le NLP (Projet personnel · 2025) : 568 454 avis Amazon analysés : sentiment, sujets d'insatisfaction et évolution dans le temps. État : terminé. Code : https://github.com/Aly2001/avis-clients-projet.",
-    "empreinte": "93b78f36255861ac"
+    "texte": "Le projet Réputation client par le NLP (Projet personnel · 2025) : 568 454 avis Amazon analysés : sentiment (93,5 % d'exactitude), 5 sujets d'insatisfaction et évolution mensuelle. État : terminé. Code : https://github.com/Aly2001/avis-clients-projet.",
+    "empreinte": "8a5ab4d501b38e60"
   },
   {
     "id": "projet-avis-amazon-outils",
@@ -126,8 +126,8 @@
       "sous": "Projet",
       "ancre": "#projet-avis-amazon"
     },
-    "texte": "Le projet Réputation client par le NLP, les outils : NLP, TF-IDF, Régression logistique, LDA, Séries temporelles.",
-    "empreinte": "d0b31ed2a2476fe0"
+    "texte": "Le projet Réputation client par le NLP, les outils : NLP, TF-IDF, Régression logistique, LDA, Pandas.",
+    "empreinte": "f8571273b730e453"
   },
   {
     "id": "projet-attrition",
@@ -196,8 +196,8 @@
       "sous": "Parcours",
       "ancre": "#etape-calais"
     },
-    "texte": "2025 – 2027 : Master 2 Ingénierie des Systèmes Complexes, EILCO, Calais.",
-    "empreinte": "e2ccb2edc66e8730"
+    "texte": "2025 – 2027 : Master 2 Ingénierie des Systèmes Complexes, EILCO, Calais (France), en cours.",
+    "empreinte": "fb761f8c0c541460"
   },
   {
     "id": "parcours-bank-al-maghreb",
@@ -206,8 +206,8 @@
       "sous": "Parcours",
       "ancre": "#etape-bank-al-maghreb"
     },
-    "texte": "Été 2024 : Stagiaire Data Scientist, Bank Al-Maghreb, Meknès (Maroc). Un modèle de prédiction pour évaluer le risque client ; L'analyse des données en SQL et Python, avec des mises à jour automatisées ; Des tableaux de bord Power BI pour l'aide à la décision.",
-    "empreinte": "3e9d2a449260ee2b"
+    "texte": "Été 2024 : Stagiaire Data Scientist, Bank Al-Maghreb, Meknès (Maroc). Un modèle de prédiction pour évaluer le risque client ; L'analyse des données en SQL et Python, avec des mises à jour automatisées ; Des tableaux de bord Power BI pour l'aide à la décision.",
+    "empreinte": "f5b4fd5cfca591fa"
   },
   {
     "id": "parcours-meknes",
@@ -216,8 +216,8 @@
       "sous": "Parcours",
       "ancre": "#etape-meknes"
     },
-    "texte": "2022 – 2024 : Licence Mathématiques-Informatique, Faculté des Sciences Moulay Ismail, Meknès.",
-    "empreinte": "0ed6c197af8af92b"
+    "texte": "2022 – 2024 : Licence Mathématiques-Informatique, Faculté des Sciences Moulay Ismail, Meknès (Maroc).",
+    "empreinte": "2aa38baece81832b"
   },
   {
     "id": "parcours-kenieba",
@@ -226,8 +226,8 @@
       "sous": "Parcours",
       "ancre": "#etape-kenieba"
     },
-    "texte": "2021 : Baccalauréat scientifique, Lycée LKBA, Kéniéba (Mali).",
-    "empreinte": "658b08c71770ea87"
+    "texte": "2021 : Baccalauréat scientifique, Lycée LKBA, Kéniéba (Mali).",
+    "empreinte": "d0749876c8405970"
   },
   {
     "id": "langues",

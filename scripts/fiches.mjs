@@ -6,7 +6,7 @@
 // ─────────────────────────────────────────────────────────────
 import { writeFileSync } from 'node:fs'
 import { createHash } from 'node:crypto'
-import { profil, projets, parcours, langues, competences, ETATS } from '../src/data/profil.js'
+import { profil, projets, parcours, langues, competences, ETATS, lieu } from '../src/data/profil.js'
 
 const fiches = []
 const ajouter = (id, source, texte) => {
@@ -48,7 +48,7 @@ projets.forEach((p) => {
 
 parcours.forEach((e) => {
   ajouter(`parcours-${e.id}`, { libelle: e.titre, sous: 'Parcours', ancre: `#etape-${e.id}` },
-    `${e.annee} : ${e.titre}, ${e.lieu}.` + (e.points ? ' ' + e.points.join(' ; ') + '.' : ''))
+    `${e.annee} : ${e.titre}, ${lieu(e)}${e.enCours ? ', en cours' : ''}.` + (e.points ? ' ' + e.points.join(' ; ') + '.' : ''))
 })
 
 ajouter('langues', { libelle: 'Langues', sous: 'Parcours', ancre: '#parcours' },
