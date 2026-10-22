@@ -197,3 +197,13 @@ def test_les_deux_modeles_en_panne_donnent_un_message_clair(dossier):
             return main.avec_secours(lambda m: (_ for _ in ()).throw(Erreur(503)), ["a", "b"])
     r = poser(dossier, TousEnPanne())
     assert r["statut"] == "erreur" and "indisponible" in r["reponse"]
+
+
+@pytest.mark.parametrize("origine,acceptee", [
+    ("https://alykeita.com", True), ("https://www.alykeita.com", True),
+    ("https://aly-keita-portfolio.web.app", True), ("https://site-pirate.example", False),
+])
+def test_seules_les_adresses_du_portfolio_peuvent_utiliser_l_assistant(dossier, origine, acceptee):
+    client = TestClient(main.creer_app(lambda: FauxGemini(), dossier))
+    r = client.options("/question", headers={"Origin": origine, "Access-Control-Request-Method": "POST"})
+    assert (r.headers.get("access-control-allow-origin") == origine) == acceptee

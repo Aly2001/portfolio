@@ -54,8 +54,10 @@ REFLEXION = os.getenv("REFLEXION", "minimal")         # minimal, low, medium, hi
 # Deux essais de 12 s au plus : le visiteur a toujours sa réponse (ou un message clair) avant 30 s.
 MODELE_SECOURS = os.getenv("MODELE_SECOURS", "gemini-3.8-flash")
 DELAI_GEMINI_MS = int(os.getenv("DELAI_GEMINI_MS", "12000"))
+# Les seules adresses autorisées à interroger l'assistant (tout autre site est refusé).
 ORIGINES = os.getenv(
-    "ORIGINES", "https://aly-keita-portfolio.web.app,http://localhost:5173"
+    "ORIGINES",
+    "https://alykeita.com,https://www.alykeita.com,https://aly-keita-portfolio.web.app,http://localhost:5173",
 ).split(",")
 SEL = os.getenv("SEL", "portfolio")                   # sert à rendre les IP illisibles
 EMAIL = "alykeita295@gmail.com"
