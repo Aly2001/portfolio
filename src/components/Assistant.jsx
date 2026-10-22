@@ -10,7 +10,7 @@ const SUGGESTIONS = [
   'Est-il disponible pour un stage ?',
 ]
 const ACCUEIL =
-  "Bonjour ! Je suis l'assistant d'Aly. Posez-moi une question sur son parcours, ses compétences ou ses projets : je réponds uniquement à partir de son CV, en citant mes sources."
+  "Bonjour ! Je suis l'assistant d'Aly. Posez-moi une question sur son parcours, ses compétences ou ses projets."
 const HORS_SERVICE =
   "L'assistant n'est pas encore branché. En attendant, vous pouvez écrire directement à Aly."
 const INDISPONIBLE = "L'assistant est momentanément indisponible. Vous pouvez écrire directement à Aly."
@@ -19,9 +19,17 @@ const TROP_LONG = "L'assistant met trop de temps à répondre. Réessayez dans u
 const DELAI_MAX_MS = 30000
 
 // Ces statuts proposent tous le même bouton « Écrire à Aly » : une seule règle.
-const AVEC_EMAIL = new Set(['refus', 'limite', 'erreur', 'hors-service'])
-// Après un « bonjour » ou un « merci », on repropose les questions suggérées.
-const AVEC_SUGGESTIONS = new Set(['accueil', 'politesse'])
+// Qui affiche quoi, décidé à UN seul endroit selon le statut et la famille du message :
+// - « Écrire à Aly » quand l'assistant ne peut pas aider (info absente, limite, panne, au revoir) ;
+// - les questions suggérées pour relancer (accueil, politesse, question hors sujet).
+function avecEmail(m) {
+  if (m.statut === 'refus') return m.famille !== 'hors-sujet'
+  return ['limite', 'erreur', 'hors-service'].includes(m.statut) || m.famille === 'revoir'
+}
+function avecSuggestions(m) {
+  if (m.famille === 'revoir') return false
+  return ['accueil', 'politesse'].includes(m.statut) || (m.statut === 'refus' && m.famille === 'hors-sujet')
+}
 
 function BoutonEmail() {
   return <a className="annonce__email" href={`mailto:${profil.email}`}><Icone nom="mail" taille={16} />Écrire à Aly</a>
@@ -32,11 +40,11 @@ function Reponse({ m, onSource }) {
     <div className="annonce">
       <div className="annonce__bulle">
         <p>{m.texte}</p>
-        {(AVEC_EMAIL.has(m.statut) || m.famille === 'revoir') && <BoutonEmail />}
+        {avecEmail(m) && <BoutonEmail />}
       </div>
       {m.sources?.length > 0 && (
         <div className="annonce__sources">
-          <span className="annonce__libelle">Sources</span>
+          <span className="annonce__libelle">Pour en savoir plus</span>
           <div className="annonce__billets">
             {m.sources.map((s) => (
               <a key={s.id} href={s.ancre} className="source" onClick={onSource}>
@@ -136,8 +144,7 @@ export default function Assistant() {
 
   // Les suggestions s'affichent sous le DERNIER message, s'il les appelle.
   const dernier = messages[messages.length - 1]
-  const montrerSuggestions = !bloque && !attente && dernier.de === 'assistant' && AVEC_SUGGESTIONS.has(dernier.statut)
-    && !(dernier.statut === 'politesse' && dernier.famille === 'revoir')
+  const montrerSuggestions = !bloque && !attente && dernier.de === 'assistant' && avecSuggestions(dernier)
 
   return (
     <>
@@ -148,7 +155,7 @@ export default function Assistant() {
             <img src="/photo-aly-256.webp" alt="" width="44" height="44" />
             <div className="guichet__titres">
               <h2 id="titre-guichet">Assistant IA</h2>
-              <p className="guichet__sous">Il répond à partir de mon CV et de mes projets</p>
+              <p className="guichet__sous">Posez-moi vos questions sur Aly</p>
             </div>
             <button type="button" className="guichet__fermer" aria-label="Fermer l'assistant" onClick={fermer}><Icone nom="fermer" taille={20} /></button>
           </div>
@@ -164,7 +171,7 @@ export default function Assistant() {
                 {SUGGESTIONS.map((s) => <button key={s} type="button" onClick={() => poser(s)}>{s}</button>)}
               </div>
             )}
-            {attente && <p className="annonce__attente"><span className="point" aria-hidden="true" />L'assistant cherche dans le CV…</p>}
+            {attente && <p className="annonce__attente"><span className="point" aria-hidden="true" />L'assistant réfléchit…</p>}
             <div ref={bas} />
           </div>
 
@@ -178,7 +185,7 @@ export default function Assistant() {
                 <Icone nom="envoyer" taille={20} />
               </button>
             </div>
-            <p className="guichet__note">Assistant IA : il ne répond qu'à partir de mon CV et peut se tromper. Pour un échange, écrivez-moi.</p>
+            <p className="guichet__note">Réponses générées par une IA, qui peut se tromper. Pour un échange, écrivez à Aly.</p>
           </form>
         </aside>
       )}

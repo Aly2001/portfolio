@@ -114,7 +114,7 @@ def test_reponses_annoncees_en_utf8(dossier):
 
 
 @pytest.mark.parametrize("message,famille", [
-    ("Bonjour", "salut"), ("bonjour !", "salut"), ("Salut ça va ?", "salut"), ("Bonjour Aly", "salut"),
+    ("Bonjour", "salut"), ("bonjour !", "salut"), ("Salut ça va ?", "cava"), ("Bonjour Aly", "salut"),
     ("Merci", "merci"), ("Merci beaucoup !", "merci"), ("ok", "accord"),
     ("Au revoir", "revoir"), ("merci et au revoir", "revoir"),
 ])
@@ -131,3 +131,69 @@ def test_politesses_sans_gemini_ni_quota(dossier, message, famille):
 @pytest.mark.parametrize("message", ["Bonjour, parle-moi de Quai Nord", "Est-il ok pour un stage ?", "Super projet !"])
 def test_vraies_questions_avec_mot_poli(dossier, message):
     assert poser(dossier, FauxGemini(), question=message)["statut"] != "politesse"
+
+
+@pytest.mark.parametrize("message,famille", [
+    ("Comment ça va ?", "cava"), ("Bonjour, ça va ?", "cava"), ("Tu vas bien ?", "cava"),
+    ("Qui es-tu ?", "qui"), ("Que peux-tu faire ?", "qui"), ("aide", "qui"),
+])
+def test_nouvelles_politesses(dossier, message, famille):
+    r = poser(dossier, FauxGemini(), question=message)
+    assert r["statut"] == "politesse" and r["famille"] == famille
+
+
+def test_les_messages_fixes_ne_parlent_jamais_du_cv():
+    textes = list(main.REFUS.values()) + [main.LIMITE["reponse"]] + [r for _, r in main.POLITESSES.values()]
+    for t in textes:
+        assert "CV" not in t and "fiche" not in t.lower()
+
+
+@pytest.mark.parametrize("brut,attendu", [
+    ("D'après son CV, Aly a fait un stage.", "Aly a fait un stage."),
+    ("Selon les fiches : il parle français.", "Il parle français."),
+    ("Aly maîtrise Python (d'après son CV) et SQL.", "Aly maîtrise Python et SQL."),
+    ("Son CV est téléchargeable sur le site.", "Son CV est téléchargeable sur le site."),
+])
+def test_la_reponse_ne_devoile_pas_sa_source(dossier, brut, attendu):
+    faux = FauxGemini(reponse={"trouve": True, "reponse": brut, "sources": ["projet-a"]})
+    assert poser(dossier, faux)["reponse"] == attendu
+
+
+def test_refus_indique_sa_famille(dossier):
+    assert poser(dossier, FauxGemini(vecteur=(-1, -1, -1)))["famille"] == "hors-sujet"
+    faux = FauxGemini(reponse={"trouve": False, "reponse": "?", "sources": []})
+    assert poser(dossier, faux)["famille"] == "absent"
+
+
+class Erreur(Exception):
+    def __init__(self, code):
+        self.code = code
+
+
+def test_modele_de_secours_si_surcharge():
+    essais = []
+    def appel(modele):
+        essais.append(modele)
+        if modele == "principal":
+            raise Erreur(504)
+        return {"ok": modele}
+    assert main.avec_secours(appel, ["principal", "secours"]) == {"ok": "secours"}
+    assert essais == ["principal", "secours"]
+
+
+def test_pas_de_secours_si_erreur_de_notre_cote():
+    essais = []
+    def appel(modele):
+        essais.append(modele)
+        raise Erreur(400)  # requête mal formée : réessayer ne servirait à rien
+    with pytest.raises(Erreur):
+        main.avec_secours(appel, ["principal", "secours"])
+    assert essais == ["principal"]
+
+
+def test_les_deux_modeles_en_panne_donnent_un_message_clair(dossier):
+    class TousEnPanne(FauxGemini):
+        def repondre(self, q, f):
+            return main.avec_secours(lambda m: (_ for _ in ()).throw(Erreur(503)), ["a", "b"])
+    r = poser(dossier, TousEnPanne())
+    assert r["statut"] == "erreur" and "indisponible" in r["reponse"]

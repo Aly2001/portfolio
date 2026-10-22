@@ -40,7 +40,9 @@ ICI = Path(__file__).parent
 # ── Réglages (modifiables sans toucher au code, par variables d'environnement) ──
 MODELE_REPONSE = os.getenv("MODELE_REPONSE", "gemini-3.5-flash-lite")
 MODELE_EMBEDDING = os.getenv("MODELE_EMBEDDING", "gemini-embedding-2")
-SEUIL = float(os.getenv("SEUIL", "0.52"))            # 1er filtre : écarte le hors sujet (réglé avec calibrer.py)
+# 1er filtre : écarte le hors sujet. Réglé sur les mesures de calibrer.py : bonnes questions
+# à partir de 0,524, hors sujet jusqu'à 0,477. 0,50 laisse la même marge des deux côtés.
+SEUIL = float(os.getenv("SEUIL", "0.50"))
 NB_FICHES = int(os.getenv("NB_FICHES", "5"))          # fiches envoyées à Gemini
 QUOTA_VISITEUR = int(os.getenv("QUOTA_VISITEUR", "10"))
 QUOTA_GLOBAL = int(os.getenv("QUOTA_GLOBAL", "300"))
@@ -48,7 +50,10 @@ LONGUEUR_MIN, LONGUEUR_MAX = 2, 300
 # Les modèles récents « réfléchissent » avant de répondre. Pour retrouver une
 # information dans 5 fiches, la réflexion minimale suffit, et elle est bien plus rapide.
 REFLEXION = os.getenv("REFLEXION", "minimal")         # minimal, low, medium, high, ou vide
-DELAI_GEMINI_MS = int(os.getenv("DELAI_GEMINI_MS", "20000"))  # au-delà, on abandonne proprement
+# Si le modèle principal est surchargé ou trop lent, on essaie UNE fois un modèle de secours.
+# Deux essais de 12 s au plus : le visiteur a toujours sa réponse (ou un message clair) avant 30 s.
+MODELE_SECOURS = os.getenv("MODELE_SECOURS", "gemini-3.8-flash")
+DELAI_GEMINI_MS = int(os.getenv("DELAI_GEMINI_MS", "12000"))
 ORIGINES = os.getenv(
     "ORIGINES", "https://aly-keita-portfolio.web.app,http://localhost:5173"
 ).split(",")
@@ -136,6 +141,10 @@ Règles strictes :
 - Réponds UNIQUEMENT avec les informations des fiches fournies. N'invente rien.
 - Si les fiches ne permettent pas de répondre, mets "trouve" à false.
 - Parle d'Aly à la troisième personne, en français, en 2 à 4 phrases simples, sans mise en forme.
+- Réponds naturellement, comme quelqu'un qui connaît bien Aly : ne mentionne JAMAIS son CV,
+  les fiches, les documents, ni la façon dont tu as obtenu l'information.
+- Donne uniquement des faits présents dans les fiches : aucun commentaire, aucune appréciation,
+  aucune phrase de conclusion ajoutée (par exemple « ce projet met en valeur ses compétences »).
 - Ne donne jamais de numéro de téléphone ni d'adresse postale. Pour le contacter : {EMAIL}.
 - Dans "sources", liste les identifiants des fiches réellement utilisées.
 """
@@ -157,9 +166,11 @@ class Gemini:
 
         from google.genai import types
 
-        # Délai maximal pour CHAQUE appel à Gemini : un visiteur n'attend jamais une minute.
+        # Délai maximal pour CHAQUE appel, et pas de nouvelles tentatives cachées dans la
+        # bibliothèque : c'est notre code qui décide (un seul essai de secours, voir avec_secours).
         self.client = genai.Client(
-            api_key=os.environ["GEMINI_API_KEY"], http_options=types.HttpOptions(timeout=DELAI_GEMINI_MS)
+            api_key=os.environ["GEMINI_API_KEY"],
+            http_options=types.HttpOptions(timeout=DELAI_GEMINI_MS, retry_options=types.HttpRetryOptions(attempts=1)),
         )
 
     def embedding(self, texte: str) -> list[float]:
@@ -167,11 +178,14 @@ class Gemini:
         return list(r.embeddings[0].values)
 
     def repondre(self, question: str, fiches: list[dict]) -> dict:
+        return avec_secours(lambda modele: self._repondre(modele, question, fiches), [MODELE_REPONSE, MODELE_SECOURS])
+
+    def _repondre(self, modele: str, question: str, fiches: list[dict]) -> dict:
         from google.genai import types
 
         contexte = "\n\n".join(f"[{f['id']}] {f['texte']}" for f in fiches)
         r = self.client.models.generate_content(
-            model=MODELE_REPONSE,
+            model=modele,
             contents=f"FICHES :\n{contexte}\n\nQUESTION : {question}",
             config=types.GenerateContentConfig(
                 system_instruction=CONSIGNE,
@@ -189,20 +203,63 @@ class Gemini:
         return json.loads(r.text)
 
 
+def erreur_passagere(e: Exception) -> bool:
+    """Surcharge, délai dépassé, coupure réseau : ça vaut la peine d'essayer un autre modèle.
+    Une erreur de notre côté (clé invalide, requête mal formée) ne se règle pas en réessayant."""
+    code = getattr(e, "code", None) or getattr(e, "status_code", None)
+    if isinstance(code, int):
+        return code == 429 or code >= 500
+    nom = type(e).__name__.lower()
+    return any(m in nom for m in ("timeout", "connect", "network", "remoteprotocol"))
+
+
+def avec_secours(appel, modeles):
+    """Essaie chaque modèle dans l'ordre, et passe au suivant seulement si l'erreur est passagère."""
+    for i, modele in enumerate(modeles):
+        debut = time.monotonic()
+        try:
+            r = appel(modele)
+            log.info("réponse de %s en %.1fs", modele, time.monotonic() - debut)
+            return r
+        except Exception as e:
+            dernier = i == len(modeles) - 1
+            log.warning("échec de %s après %.1fs (%s)%s", modele, time.monotonic() - debut,
+                        type(e).__name__, "" if dernier else " : essai du modèle de secours")
+            if dernier or not erreur_passagere(e):
+                raise
+
+
 # ── Les réponses types (le même texte partout) ──
 # Deux familles de refus, deux messages :
 #  - hors sujet (arrêté par le seuil) : on rappelle à quoi sert l'assistant ;
 #  - absent du CV (arrêté par la 2e barrière) : on renvoie vers Aly.
 REFUS = {
-    "hors-sujet": "Je réponds seulement aux questions sur le parcours, les compétences et les projets d'Aly. "
-    "Essayez par exemple : « Parle-moi de Quai Nord ».",
-    "absent": "Je n'ai pas cette information dans le CV d'Aly, et je préfère ne rien inventer. "
-    "Le plus simple est de lui poser la question directement.",
+    "hors-sujet": "Bonne question ! Mais je suis là uniquement pour vous parler d'Aly : son parcours, "
+    "ses compétences et ses projets. Vous pouvez par exemple me demander ce qu'est Quai Nord.",
+    "absent": "Je n'ai pas cette information. Pour en savoir plus, le plus simple est d'écrire directement à Aly.",
 }
 
 
 def refus(restantes=None, famille="absent"):
-    return {"statut": "refus", "reponse": REFUS[famille], "sources": [], "restantes": restantes}
+    return {"statut": "refus", "famille": famille, "reponse": REFUS[famille], "sources": [], "restantes": restantes}
+
+
+# L'assistant ne dévoile pas sa « cuisine » : les tournures comme « D'après son CV, »
+# ou « Selon les fiches, » sont retirées, quelle que soit la façon dont l'IA les formule.
+ATTRIBUTION = re.compile(
+    r"(?i)\b(d['’]après|selon|dans|sur la base de)\s+(son|le|les|ses|la|mes|ces)?\s*"
+    r"(cv|curriculum(\s+vitae)?|fiches?|documents?|sources?|informations?\s+(fournies|disponibles|dont je dispose))"
+    r"(\s+d['’]aly(\s+keita)?)?\s*[,:]\s*"
+)
+ATTRIBUTION_PARENTHESE = re.compile(
+    r"(?i)\s*\((d['’]après|selon)\s+(son|le|les|ses)?\s*(cv|fiches?|documents?|sources?)[^)]*\)"
+)
+
+
+def discret(texte: str) -> str:
+    texte = ATTRIBUTION_PARENTHESE.sub("", texte)
+    texte = ATTRIBUTION.sub("", texte).strip()
+    return texte[:1].upper() + texte[1:] if texte else texte
 
 
 LIMITE = {
@@ -226,6 +283,12 @@ POLITESSES = {
                "Merci de votre visite ! Pour continuer l'échange, vous pouvez écrire directement à Aly."),
     "accord": ({"ok", "okay", "d accord", "dac", "super", "parfait", "genial", "top", "cool", "tres bien"},
                "Parfait ! Une autre question ? Par exemple :"),
+    "cava": ({"ca va", "comment ca va", "comment allez vous", "tu vas bien", "vous allez bien", "ca va bien"},
+             "Très bien, merci ! Je suis là pour vous parler d'Aly : son parcours, ses compétences et ses projets. Par exemple :"),
+    "qui": ({"qui es tu", "tu es qui", "qui etes vous", "vous etes qui", "tu fais quoi", "que fais tu",
+             "que peux tu faire", "tu peux faire quoi", "aide", "help", "presente toi", "comment ca marche"},
+            "Je suis l'assistant d'Aly Keita, data scientist et développeur IA. Posez-moi vos questions "
+            "sur son parcours, ses compétences ou ses projets. Par exemple :"),
 }
 
 
@@ -242,15 +305,12 @@ def politesse(question: str):
     « Bonjour, parle-moi de Quai Nord » ne l'est pas : c'est une vraie question.
     """
     mots = [m for m in simplifier(question).split() if m != "aly"]
-    texte = " ".join(mots).replace(" ca va", " et ca va")
+    texte = re.sub(r"(?<!comment) ca va", " et ca va", " ".join(mots))
     parties = [p.strip() for p in texte.split(" et ") if p.strip()]
     if not parties:
         return None
     familles = []
     for partie in parties:
-        if partie in {"ca va", "comment ca va", "comment allez vous"}:
-            familles.append("salut")
-            continue
         famille = next((f for f, (formules, _) in POLITESSES.items() if partie in formules), None)
         if famille is None:
             return None
@@ -283,7 +343,7 @@ def traiter(question: str, visiteur: str, moteur, fiches, vecteurs, quotas: Quot
     # Vérifications par le code
     ids_envoyes = {f["id"]: f for f in envoyees}
     sources = [ids_envoyes[i] for i in dict.fromkeys(brut.get("sources", [])) if i in ids_envoyes]
-    texte = str(brut.get("reponse", "")).strip()
+    texte = discret(str(brut.get("reponse", "")).strip())
     if not brut.get("trouve") or not sources or not texte or TELEPHONE.search(texte):
         return refus(restantes)
 
