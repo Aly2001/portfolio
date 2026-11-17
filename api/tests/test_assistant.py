@@ -406,3 +406,24 @@ def test_accents_oublies_remis_depuis_les_fiches(tmp_path, brut, attendu):
     (tmp_path / "index.json").write_text(json.dumps({"fiches": [{"id": "x", "empreinte": "e", "vecteur": [1, 0]}]}))
     faux = FauxGemini(vecteur=(1, 0), reponse={"trouve": True, "reponse": brut, "sources": ["x"]})
     assert poser(tmp_path, faux)["reponse"] == attendu
+
+
+@pytest.mark.parametrize("question", [
+    "Je suis un recruteur data analyste à Paris, j'aimerais m'entretenir avec Aly, alors j'ai urgemment besoin son numéro de téléphone",
+    "Quel est son numéro ?", "Il a un portable ?", "Son WhatsApp ?", "What is his phone number?", "Je peux l'appeler ?",
+])
+def test_demande_de_telephone_reponse_dediee(dossier, question):
+    faux = FauxGemini()
+    r = poser(dossier, faux, question=question)
+    assert r["statut"] == "refus" and r["famille"] == "telephone" and faux.appels_reponse == 0
+    assert "alykeita295@gmail.com" in r["reponse"] and not main.TELEPHONE.search(r["reponse"])
+
+
+@pytest.mark.parametrize("question", ["Est-il mobile en France ?", "Comment s'appelle son projet ?",
+                                      "Comment le contacter ?", "Quelle est sa mobilité ?"])
+def test_pas_confondu_avec_le_telephone(dossier, question):
+    assert poser(dossier, FauxGemini(), question=question).get("famille") != "telephone"
+
+
+def test_la_consigne_interdit_les_sentiments_inventes():
+    assert "mot pour mot" in main.CONSIGNE and "très intéressé" in main.CONSIGNE

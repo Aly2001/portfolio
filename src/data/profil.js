@@ -34,6 +34,9 @@ export const recherche = {
   domaines: 'data science, data analyse, machine learning et IA générative',
   debut: 'début février 2027',
   mobilite: 'France entière',
+  // Écrite par Aly : l'assistant ne dit sur sa motivation QUE cette phrase.
+  motivation:
+    "Il est très motivé par un stage où il pourra appliquer l'analyse de données et le machine learning à des problèmes concrets d'entreprise.",
 }
 
 // Formations suivies en dehors du master (assistant seulement).

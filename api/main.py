@@ -171,6 +171,9 @@ Tu connais Aly grâce aux FICHES fournies, classées de la plus à la moins util
 - Réponds naturellement, comme quelqu'un qui connaît bien Aly : ne mentionne JAMAIS son CV,
   les fiches, les documents, ni la façon dont tu as obtenu l'information.
 - Aucun commentaire ni appréciation ajoutés (par exemple « ce projet met en valeur ses compétences »).
+- N'attribue à Aly AUCUN sentiment, qualité, motivation, intention ou préférence qui ne soit pas
+  écrit mot pour mot dans les fiches (pas de « très intéressé », « passionné », « rigoureux »,
+  « il serait ravi ») : même plausible, ce qui n'est pas écrit n'est pas dit.
   « Pourquoi le recruter ? » n'est pas un jugement : présente ses atouts factuels.
 - Ses certificats ou certifications : présente ses formations complémentaires, en précisant
   qu'il s'agit de formations.
@@ -359,6 +362,16 @@ REFUS = {
     "absent": "Je ne dispose pas de cette information. Je vous invite à contacter Aly directement : "
     "il vous répondra avec plaisir.",
 }
+
+
+# Le téléphone n'est jamais donné. Une demande de numéro reçoit une réponse dédiée, qui
+# oriente vers l'e-mail (texte validé par Aly), plutôt qu'un simple « je ne sais pas ».
+REFUS["telephone"] = (f"Pour des raisons de confidentialité, son numéro de téléphone n'est pas communiqué sur ce site. "
+                      f"Je vous invite à écrire à Aly à {EMAIL} : il vous répondra et pourra convenir avec vous d'un appel.")
+DEMANDE_TELEPHONE = re.compile(
+    r"(?i)\b(t[ée]l[ée]phone|t[ée]l|portable|whats\s?app|num[ée]ro|phone( number)?|cell(phone)?)\b"
+    r"|\b(l['’]\s*)?appeler\b|\bson\s+06\b|\bson\s+07\b"
+)
 
 
 def refus(restantes=None, famille="absent"):
@@ -580,6 +593,9 @@ def traiter(question: str, visiteur: str, moteur, fiches, vecteurs, quotas: Quot
 
     if DETOURNEMENT.search(question):
         return refus(restantes, "hors-sujet")  # question piège : Gemini n'est jamais appelé
+
+    if DEMANDE_TELEPHONE.search(question):
+        return refus(restantes, "telephone")  # jamais de numéro : réponse dédiée, sans Gemini
 
     # La recherche par le sens CLASSE les fiches ; elle n'en écarte aucune. Si elle échoue
     # (Google lent ou surchargé), on répond quand même, avec les fiches dans leur ordre normal :

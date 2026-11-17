@@ -27,7 +27,8 @@ ajouter('disponibilite', { libelle: 'Me contacter', sous: 'Contact', ancre: '#co
 
 ajouter('recherche-postes', { libelle: 'Me contacter', sous: 'Contact', ancre: '#contact' },
   `Postes de stage recherchés par ${profil.nom} : ${recherche.postes.join(' ou ')}. ` +
-  `Domaines visés : ${recherche.domaines}. Stage de 6 mois à partir de ${recherche.debut}, partout en France.`)
+  `Domaines visés : ${recherche.domaines}. Stage de 6 mois à partir de ${recherche.debut}, partout en France. ` +
+  `Sa motivation : ${recherche.motivation}`)
 
 // Les atouts : uniquement des faits déjà présents dans le profil, rassemblés pour
 // répondre à « Pourquoi le recruter ? » ou « Quels sont ses points forts ? ».
