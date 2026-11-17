@@ -1,4 +1,4 @@
-import { profil } from '../data/profil.js'
+import { profil, T } from '../data/langue.js'
 import Icone from './Icone.jsx'
 
 export default function Contact() {
@@ -6,8 +6,8 @@ export default function Contact() {
     <section id="contact" className="conteneur contact-section" aria-labelledby="titre-contact">
       <div className="contact">
         <div>
-          <h2 id="titre-contact">Travaillons ensemble.</h2>
-          <p>Un stage, un projet data ou une simple question : écrivez-moi, je réponds vite.</p>
+          <h2 id="titre-contact">{T.contactTitre}</h2>
+          <p>{T.contactPhrase}</p>
         </div>
         <div className="contact__liens">
           <a className="contact__mail" href={`mailto:${profil.email}`}>{profil.email} <Icone nom="mail" taille={20} /></a>

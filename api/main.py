@@ -216,15 +216,15 @@ class Gemini:
         r = self.client.models.embed_content(model=MODELE_EMBEDDING, contents=texte)
         return list(r.embeddings[0].values)
 
-    def repondre(self, question: str, fiches: list[dict]) -> dict:
-        return avec_secours(lambda modele: self._repondre(modele, question, fiches), [MODELE_REPONSE, *MODELES_SECOURS])
+    def repondre(self, question: str, fiches: list[dict], langue: str = "fr") -> dict:
+        return avec_secours(lambda modele: self._repondre(modele, question, fiches, langue), [MODELE_REPONSE, *MODELES_SECOURS])
 
-    def _repondre(self, modele: str, question: str, fiches: list[dict]) -> dict:
+    def _repondre(self, modele: str, question: str, fiches: list[dict], langue_reponse: str = "fr") -> dict:
         from google.genai import types
 
         contexte = "\n\n".join(f"[{f['id']}] {f['texte']}" for f in fiches)
         # Le modèle léger répond parfois en français à une question en anglais : on le lui rappelle.
-        langue = "\n\n(Question en anglais : écris la réponse en anglais.)" if est_en_anglais(question) else ""
+        langue = "\n\n(Écris la réponse en anglais.)" if langue_reponse == "en" else ""
 
         def appel(niveau):
             return self.client.models.generate_content(
@@ -518,23 +518,28 @@ LIMITE = {
 POLITESSES = {
     "qui": ({"qui es tu", "tu es qui", "qui etes vous", "vous etes qui", "tu fais quoi", "que fais tu",
              "que faites vous", "que peux tu faire", "que pouvez vous faire", "tu peux faire quoi",
-             "aide", "help", "presente toi", "presentez vous", "comment ca marche", "tu sers a quoi"},
+             "aide", "help", "presente toi", "presentez vous", "comment ca marche", "tu sers a quoi",
+             "who are you", "what are you", "what can you do", "what do you do", "how does it work",
+             "introduce yourself"},
             "Je suis l'assistant virtuel d'Aly Keita, data scientist et développeur IA. Je réponds à vos questions "
             "sur son parcours, ses compétences, ses projets et sa disponibilité. Par exemple :"),
     "cava": ({"ca va", "comment ca va", "comment allez vous", "tu vas bien", "vous allez bien", "ca va bien",
-              "comment vas tu", "ca roule"},
+              "comment vas tu", "ca roule", "how are you", "how are you doing", "how is it going"},
              "Très bien, je vous remercie. Je suis à votre disposition pour vous présenter le parcours, "
              "les compétences et les projets d'Aly Keita. Par exemple :"),
     "revoir": ({"au revoir", "bye", "a bientot", "a plus", "bonne journee", "bonne soiree", "ciao", "bonne nuit",
-                "a la prochaine"},
+                "a la prochaine", "goodbye", "good bye", "see you", "see you soon", "have a nice day", "good night"},
                "Merci de votre visite. Pour toute proposition ou tout échange, vous pouvez contacter Aly directement par e-mail."),
-    "merci": ({"merci", "thanks", "thank you", "merci beaucoup", "merci bien", "mrc", "je vous remercie"},
+    "merci": ({"merci", "thanks", "thank you", "merci beaucoup", "merci bien", "mrc", "je vous remercie",
+               "thanks a lot", "thank you very much", "many thanks", "thx"},
               "Je vous en prie. Avez-vous une autre question sur le parcours ou les projets d'Aly ? Par exemple :"),
     "accord": ({"ok", "okay", "d accord", "dac", "super", "parfait", "genial", "top", "cool", "tres bien",
-                "entendu", "compris", "tres interessant", "interessant"},
+                "entendu", "compris", "tres interessant", "interessant", "great", "nice", "perfect", "alright",
+                "got it", "sure", "interesting", "awesome"},
                "Très bien. Souhaitez-vous en savoir davantage ? Par exemple :"),
     "salut": ({"bonjour", "salut", "bonsoir", "hello", "coucou", "hi", "hey", "yo", "bjr", "slt", "cc",
-               "bonjour bonjour", "rebonjour", "salam", "salam aleykoum", "assalamu alaykum"},
+               "bonjour bonjour", "rebonjour", "salam", "salam aleykoum", "assalamu alaykum",
+               "good morning", "good afternoon", "good evening", "hello there", "hi there"},
               "Bonjour et bienvenue. Je suis l'assistant virtuel d'Aly Keita : je peux vous renseigner sur "
               "son parcours, ses compétences, ses projets et sa disponibilité. Par exemple :"),
 }
@@ -543,7 +548,8 @@ POLITESSES = {
 # « Salut l'assistant », « Merci beaucoup Aly » restent des politesses.
 ACCOMPAGNEMENT = {"aly", "keita", "a", "toi", "vous", "tous", "tout", "le", "la", "l", "monde", "et",
                   "monsieur", "madame", "cher", "chere", "assistant", "bot", "encore", "bien", "tres",
-                  "alors", "eh", "oh", "re", "donc", "voila", "beaucoup"}
+                  "alors", "eh", "oh", "re", "donc", "voila", "beaucoup", "there", "so", "very", "much",
+                  "again", "everyone", "sir", "madam"}
 VOCABULAIRE = sorted({m for formules, _ in POLITESSES.values() for f in formules for m in f.split()})
 
 
@@ -575,7 +581,7 @@ REPONSE_IDENTITE = (
     "disponibilité d'Aly Keita. Vous pouvez par exemple me demander :"
 )
 
-SALUTATION_INITIALE = re.compile(r"(?i)^\s*(bonjour|bonsoir|salut|hello|coucou|hey|rebonjour)\b[\s,;:!.]*")
+SALUTATION_INITIALE = re.compile(r"(?i)^\s*(bonjour|bonsoir|salut|hello|hi|coucou|hey|rebonjour|good (morning|afternoon|evening))\b[\s,;:!.]*")
 
 
 def politesse(question: str):
@@ -607,13 +613,84 @@ def politesse(question: str):
         return None
     famille = next(f for f in POLITESSES if f in trouvees)  # la plus prioritaire
     reponse = POLITESSES[famille][1]
-    if "bonsoir" in mots:  # on répond « Bonsoir » à qui dit « Bonsoir »
+    if "bonsoir" in mots or "evening" in mots:  # on répond « Bonsoir » à qui dit « Bonsoir »
         reponse = reponse.replace("Bonjour", "Bonsoir")
     return famille, reponse
 
 
-def traiter(question: str, visiteur: str, moteur, fiches, vecteurs, quotas: Quotas) -> dict:
+# ── La version anglaise des messages fixes ──
+# La réponse est en anglais si la question est clairement en anglais, ou si elle ne dit rien de
+# sa langue (« Python ? », « hello ») et que le visiteur est sur la page anglaise.
+INDISPONIBLE = ("L'assistant est momentanément indisponible. Je vous invite à réessayer dans un instant, "
+                "ou à contacter Aly directement par e-mail.")
+
+
+MOTS_FRANCAIS = FRANCAIS | {"bonjour", "bonsoir", "salut", "merci", "coucou", "pour", "avec", "dans", "quand",
+                             "combien", "pourquoi", "je", "vous", "tu", "nous", "elle", "au", "aux", "ce", "cette",
+                             "ses", "sur", "pas", "oui", "non", "parle", "moi"}
+
+
+def est_en_francais(texte: str) -> bool:
+    """Mots français courants, inversion (« est-il », « a-t-il », « pouvez-vous ») ou lettres accentuées."""
+    mots = [m.lower() for m in re.findall(r"[A-Za-zÀ-ÿ'-]+", texte)]
+    francais = sum(m in MOTS_FRANCAIS or bool(re.search(r"-(t-)?(il|elle|ils|on|vous|tu|je)$|[éèêàçùûôîœ]", m))
+                   for m in mots)
+    return francais > sum(m in ANGLAIS for m in mots)
+
+
+def langue_reponse(question: str, page: str = "fr") -> str:
+    if est_en_anglais(question):
+        return "en"
+    if est_en_francais(question):
+        return "fr"
+    return "en" if page == "en" else "fr"
+
+
+# Chaque message fixe français a sa traduction : un message oublié ici est repéré par les tests.
+MESSAGES_EN = {
+    REFUS["hors-sujet"]: "I can only answer questions about Aly Keita: his background, skills, projects and "
+    "availability. For example, you can ask me what internship he is looking for.",
+    REFUS["absent"]: "I don't have this information. Please contact Aly directly: he will be glad to answer you.",
+    REFUS["telephone"]: f"For privacy reasons, his phone number is not shared on this site. Please email Aly at "
+    f"{EMAIL}: he will reply and can arrange a call with you.",
+    LIMITE["reponse"]: "You have reached the maximum number of questions for today. To continue the conversation, "
+    "please contact Aly directly by email.",
+    INDISPONIBLE: "The assistant is temporarily unavailable. Please try again in a moment, or contact Aly directly by email.",
+    POLITESSES["qui"][1]: "I'm the virtual assistant of Aly Keita, data scientist and AI developer. I answer questions "
+    "about his background, skills, projects and availability. For example:",
+    POLITESSES["cava"][1]: "Very well, thank you. I'm here to tell you about Aly Keita's background, skills and "
+    "projects. For example:",
+    POLITESSES["revoir"][1]: "Thank you for your visit. For any opportunity or discussion, you can contact Aly "
+    "directly by email.",
+    POLITESSES["merci"][1]: "You're welcome. Do you have another question about Aly's background or projects? For example:",
+    POLITESSES["accord"][1]: "Very well. Would you like to know more? For example:",
+    POLITESSES["salut"][1]: "Hello and welcome. I'm Aly Keita's virtual assistant: I can tell you about his "
+    "background, skills, projects and availability. For example:",
+    POLITESSES["salut"][1].replace("Bonjour", "Bonsoir"): "Good evening and welcome. I'm Aly Keita's virtual "
+    "assistant: I can tell you about his background, skills, projects and availability. For example:",
+    REPONSE_IDENTITE: "I cannot verify the identity of the people I talk with, so I answer every visitor the same "
+    "way, only about Aly Keita's background, skills, projects and availability. For example, you can ask me:",
+}
+
+
+def en_anglais(r: dict) -> dict:
+    """Remplace un message fixe français par sa version anglaise (une réponse de Gemini est déjà
+    dans la bonne langue et ne figure pas dans la table : elle passe telle quelle)."""
+    texte = r.get("reponse", "")
+    if texte.startswith("Votre question doit faire entre"):
+        return {**r, "reponse": f"Your question must be between {LONGUEUR_MIN} and {LONGUEUR_MAX} characters."}
+    return {**r, "reponse": MESSAGES_EN.get(texte, texte)}
+
+
+def traiter(question: str, visiteur: str, moteur, fiches, vecteurs, quotas: Quotas, page: str = "fr") -> dict:
+    """Répond à une question, puis met les messages fixes dans la langue de la réponse."""
     question = " ".join(question.split())
+    langue = langue_reponse(question, page)
+    return en_anglais(_traiter(question, visiteur, moteur, fiches, vecteurs, quotas, langue)) if langue == "en" \
+        else _traiter(question, visiteur, moteur, fiches, vecteurs, quotas, langue)
+
+
+def _traiter(question: str, visiteur: str, moteur, fiches, vecteurs, quotas: Quotas, langue: str) -> dict:
     if not (LONGUEUR_MIN <= len(question) <= LONGUEUR_MAX):
         return {"statut": "erreur", "reponse": f"Votre question doit faire entre {LONGUEUR_MIN} et {LONGUEUR_MAX} caractères.", "sources": [], "restantes": None}
 
@@ -645,7 +722,7 @@ def traiter(question: str, visiteur: str, moteur, fiches, vecteurs, quotas: Quot
         log.warning("recherche par le sens impossible (%s : %s) : fiches dans l'ordre normal",
                     type(e).__name__, str(e)[:200])
         envoyees = list(fiches)
-    brut = moteur.repondre(question, envoyees)
+    brut = moteur.repondre(question, envoyees, langue)
     if brut.get("hors_sujet") and not brut.get("trouve"):
         return refus(restantes, "hors-sujet")
 
@@ -677,6 +754,7 @@ class JSONUtf8(JSONResponse):
 
 class Question(BaseModel):
     question: str
+    langue: str = "fr"   # la langue de la page : « fr » (alykeita.com) ou « en » (alykeita.com/en)
 
 
 def creer_app(moteur_fabrique: Callable = Gemini, dossier: Path = ICI) -> FastAPI:
@@ -701,10 +779,13 @@ def creer_app(moteur_fabrique: Callable = Gemini, dossier: Path = ICI) -> FastAP
     def question(q: Question, request: Request):
         debut = time.monotonic()
         try:
-            r = traiter(q.question, identifiant_visiteur(request), moteur(), fiches, vecteurs, quotas)
+            r = traiter(q.question, identifiant_visiteur(request), moteur(), fiches, vecteurs, quotas,
+                        "en" if q.langue == "en" else "fr")
         except Exception:  # jamais de détail technique renvoyé au visiteur
             log.exception("Erreur pendant le traitement d'une question")
-            r = {"statut": "erreur", "reponse": "L'assistant est momentanément indisponible. Je vous invite à réessayer dans un instant, ou à contacter Aly directement par e-mail.", "sources": [], "restantes": None}
+            r = {"statut": "erreur", "reponse": INDISPONIBLE, "sources": [], "restantes": None}
+            if langue_reponse(q.question, q.langue) == "en":
+                r = en_anglais(r)
         # Une ligne par question : le statut et la durée, jamais le texte de la question.
         log.info("question traitée : statut=%s durée=%.1fs", r["statut"], time.monotonic() - debut)
         return r

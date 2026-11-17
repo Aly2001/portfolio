@@ -77,8 +77,8 @@ class Memoire:
             self.deja[texte] = self.moteur.embedding(texte)
         return self.deja[texte]
 
-    def repondre(self, question, fiches):
-        return self.moteur.repondre(question, fiches)
+    def repondre(self, question, fiches, langue="fr"):
+        return self.moteur.repondre(question, fiches, langue)
 
 
 fiches, vecteurs = charger_index()

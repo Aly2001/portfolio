@@ -1,20 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
-import { profil } from '../data/profil.js'
+import { profil, T, LANGUE, traduireSource } from '../data/langue.js'
 import { ASSISTANT_URL } from '../config.js'
 import Icone from './Icone.jsx'
 
-const SUGGESTIONS = [
-  'Quel stage recherche-t-il, et à partir de quand ?',
-  'Quelle est son expérience en data science ?',
-  'Quelles sont ses compétences en analyse de données ?',
-  'Présentez-moi le projet Quai Nord',
-]
-const ACCUEIL =
-  "Bonjour et bienvenue. Je suis l'assistant virtuel d'Aly Keita : je peux vous renseigner sur son parcours, ses compétences, ses projets et sa disponibilité."
-const HORS_SERVICE =
-  "L'assistant n'est pas encore disponible. Je vous invite à contacter Aly directement par e-mail."
-const INDISPONIBLE = "L'assistant est momentanément indisponible. Je vous invite à réessayer dans un instant, ou à contacter Aly directement par e-mail."
-const TROP_LONG = "La réponse prend plus de temps que prévu. Je vous invite à réessayer dans un instant, ou à contacter Aly directement par e-mail."
+const { suggestions: SUGGESTIONS, accueil: ACCUEIL, horsService: HORS_SERVICE, indisponible: INDISPONIBLE, tropLong: TROP_LONG } = T.assistant
 // Au-delà, on arrête d'attendre : le serveur abandonne de lui-même après 20 s par appel.
 const DELAI_MAX_MS = 30000
 
@@ -49,7 +38,7 @@ function TexteAvecLiens({ texte }) {
 }
 
 function BoutonEmail() {
-  return <a className="annonce__email" href={`mailto:${profil.email}`}><Icone nom="mail" taille={16} />Écrire à Aly</a>
+  return <a className="annonce__email" href={`mailto:${profil.email}`}><Icone nom="mail" taille={16} />{T.assistant.ecrire}</a>
 }
 
 function Reponse({ m, onSource }) {
@@ -61,12 +50,12 @@ function Reponse({ m, onSource }) {
       </div>
       {m.sources?.length > 0 && (
         <div className="annonce__sources">
-          <span className="annonce__libelle">Pour en savoir plus</span>
+          <span className="annonce__libelle">{T.assistant.enSavoirPlus}</span>
           <div className="annonce__billets">
             {m.sources.map((s) => (
               <a key={s.id} href={s.ancre} className="source" onClick={onSource}>
                 <span className="source__icone" aria-hidden="true"><Icone nom="lien" taille={15} /></span>
-                <span className="source__textes"><span className="source__sous">{s.sous}</span>{s.libelle}</span>
+                <span className="source__textes"><span className="source__sous">{traduireSource(s.sous)}</span>{traduireSource(s.libelle)}</span>
               </a>
             ))}
           </div>
@@ -145,7 +134,7 @@ export default function Assistant() {
       const rep = await fetch(`${ASSISTANT_URL}/question`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ question: q }),
+        body: JSON.stringify({ question: q, langue: LANGUE }),
         signal: arret.signal,
       })
       r = await rep.json()
@@ -171,10 +160,10 @@ export default function Assistant() {
           <div className="guichet__tete">
             <img src="/photo-aly-256.webp" alt="" width="44" height="44" />
             <div className="guichet__titres">
-              <h2 id="titre-guichet">Assistant IA</h2>
-              <p className="guichet__sous">Posez-moi vos questions sur Aly</p>
+              <h2 id="titre-guichet">{T.assistant.titre}</h2>
+              <p className="guichet__sous">{T.assistant.sousTitre}</p>
             </div>
-            <button type="button" className="guichet__fermer" aria-label="Fermer l'assistant" onClick={fermer}><Icone nom="fermer" taille={20} /></button>
+            <button type="button" className="guichet__fermer" aria-label={T.assistant.fermer} onClick={fermer}><Icone nom="fermer" taille={20} /></button>
           </div>
 
           <div className="guichet__fil" aria-live="polite">
@@ -188,21 +177,21 @@ export default function Assistant() {
                 {SUGGESTIONS.map((s) => <button key={s} type="button" onClick={() => poser(s)}>{s}</button>)}
               </div>
             )}
-            {attente && <p className="annonce__attente"><span className="point" aria-hidden="true" />L'assistant réfléchit…</p>}
+            {attente && <p className="annonce__attente"><span className="point" aria-hidden="true" />{T.assistant.reflechit}</p>}
             <div ref={bas} />
           </div>
 
           <form className="guichet__pied" onSubmit={(e) => { e.preventDefault(); poser(saisie) }}>
             <div className="guichet__saisie">
-              <label htmlFor="question-assistant" className="sr-only">Votre question</label>
+              <label htmlFor="question-assistant" className="sr-only">{T.assistant.votreQuestion}</label>
               <input ref={champ} id="question-assistant" type="text" maxLength={300} autoComplete="off"
                 value={saisie} onChange={(e) => setSaisie(e.target.value)} disabled={bloque}
-                placeholder={bloque ? (ASSISTANT_URL ? "Revenez demain pour d'autres questions" : 'Bientôt disponible') : 'Votre question…'} />
-              <button type="submit" aria-label="Envoyer la question" disabled={bloque || attente || !saisie.trim()}>
+                placeholder={bloque ? (ASSISTANT_URL ? T.assistant.demain : T.assistant.bientot) : T.assistant.placeholder} />
+              <button type="submit" aria-label={T.assistant.envoyer} disabled={bloque || attente || !saisie.trim()}>
                 <Icone nom="envoyer" taille={20} />
               </button>
             </div>
-            <p className="guichet__note">Réponses générées par une IA, qui peut se tromper. Pour un échange, écrivez à Aly.</p>
+            <p className="guichet__note">{T.assistant.note}</p>
           </form>
         </aside>
       )}
@@ -211,7 +200,7 @@ export default function Assistant() {
         <button ref={bouton} type="button" className={`assistant__bouton${accueilVisible ? ' est-cache' : ''}`}
           onClick={() => setOuvert(true)}>
           <Icone nom="bulle" taille={18} />
-          <span>Assistant IA<span className="assistant__suite"> : une question sur moi ?</span></span>
+          <span>{T.assistant.bouton}<span className="assistant__suite">{T.assistant.boutonSuite}</span></span>
         </button>
       )}
     </>

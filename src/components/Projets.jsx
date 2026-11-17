@@ -1,4 +1,4 @@
-import { projets, ETATS } from '../data/profil.js'
+import { projets, ETATS, T } from '../data/langue.js'
 import Icone from './Icone.jsx'
 import Etiquettes from './Etiquettes.jsx'
 import EnteteSection from './EnteteSection.jsx'
@@ -43,10 +43,10 @@ function Phare({ p }) {
   return (
     <article id={`projet-${p.id}`} className="phare" aria-labelledby={`titre-${p.id}`}>
       <div className="phare__texte">
-        <p className="phare__haut"><Etat etat={p.etat} /> · projet phare</p>
+        <p className="phare__haut"><Etat etat={p.etat} /> · {T.phare}</p>
         <h3 id={`titre-${p.id}`} className="phare__titre">{p.titre}</h3>
         <p className="phare__resume"><strong>{p.resume}</strong> {p.texte}</p>
-        <ol className="chaine" aria-label="Les étapes du projet">
+        <ol className="chaine" aria-label={T.etapes}>
           {p.chaine.flatMap((c, i) => [
             i > 0 && <li key={`sep-${c}`} className="chaine__sep" aria-hidden="true">›</li>,
             <li key={c} className={c === p.chaineActive ? 'est-actif' : undefined}>{c}</li>,
@@ -54,8 +54,8 @@ function Phare({ p }) {
         </ol>
         <Etiquettes liste={p.outils} />
         <div className="rangee">
-          <a className="bouton bouton--plein" href={p.site}>Voir le site <Icone nom="externe" taille={16} /></a>
-          <a className="bouton bouton--contour" href={p.code}>Le code <Icone nom="externe" taille={16} /></a>
+          <a className="bouton bouton--plein" href={p.site}>{T.voirSite} <Icone nom="externe" taille={16} /></a>
+          <a className="bouton bouton--contour" href={p.code}>{T.leCode} <Icone nom="externe" taille={16} /></a>
         </div>
       </div>
       <div className="phare__visuel"><Visuel v={p.visuel} /></div>
@@ -72,8 +72,8 @@ function LigneProjet({ p }) {
         <p className="projet__description">{p.texte}</p>
         <Etiquettes liste={p.outils} />
         {p.code
-          ? <a className="lien-souligne" href={p.code}>Voir le code <Icone nom="externe" taille={14} /></a>
-          : <span className="discret">Code bientôt publié</span>}
+          ? <a className="lien-souligne" href={p.code}>{T.voirCode} <Icone nom="externe" taille={14} /></a>
+          : <span className="discret">{T.codeBientot}</span>}
       </div>
       <div className="projet__visuel"><Visuel v={p.visuel} /></div>
     </article>
@@ -81,11 +81,9 @@ function LigneProjet({ p }) {
 }
 
 export default function Projets() {
-  const nombre = ['Zéro', 'Un', 'Deux', 'Trois', 'Quatre', 'Cinq', 'Six', 'Sept', 'Huit', 'Neuf', 'Dix'][projets.length] ?? projets.length
   return (
     <section className="conteneur section" aria-labelledby="projets">
-      <EnteteSection id="projets" titre="Projets"
-        phrase={`${nombre} projets, de la collecte des données jusqu'à une application en ligne.`} />
+      <EnteteSection id="projets" titre={T.projetsTitre} phrase={T.projetsPhrase(projets.length)} />
       {projets.filter((p) => p.phare).map((p) => <Phare key={p.id} p={p} />)}
       <div className="projets">
         {projets.filter((p) => !p.phare).map((p) => <LigneProjet key={p.id} p={p} />)}

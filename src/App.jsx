@@ -5,12 +5,12 @@ import Competences from './components/Competences.jsx'
 import Parcours from './components/Parcours.jsx'
 import Contact from './components/Contact.jsx'
 import Assistant from './components/Assistant.jsx'
-import { profil } from './data/profil.js'
+import { profil, T } from './data/langue.js'
 
 export default function App() {
   return (
     <>
-      <a className="lien-evitement" href="#contenu">Aller au contenu</a>
+      <a className="lien-evitement" href="#contenu">{T.evitement}</a>
       <Entete />
       <main id="contenu">
         <Accueil />

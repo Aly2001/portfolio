@@ -23,8 +23,9 @@ class FauxGemini:
     def embedding(self, texte):
         return self.vecteur
 
-    def repondre(self, question, fiches):
+    def repondre(self, question, fiches, langue="fr"):
         self.appels_reponse += 1
+        self.langue_demandee = langue
         self.fiches_recues = [f["id"] for f in fiches]
         return self.reponse or {"trouve": True, "reponse": "Il fait du ML.", "sources": [fiches[0]["id"]]}
 
@@ -115,7 +116,7 @@ def test_index_perime_bloque_le_demarrage(dossier):
 
 def test_erreur_technique_jamais_affichee(dossier):
     class EnPanne(FauxGemini):
-        def repondre(self, q, f):
+        def repondre(self, q, f, langue="fr"):
             raise ValueError("détail interne secret")
     r = poser(dossier, EnPanne())
     assert r["statut"] == "erreur" and "secret" not in r["reponse"]
@@ -238,7 +239,7 @@ def test_pas_de_secours_si_erreur_de_notre_cote():
 
 def test_les_deux_modeles_en_panne_donnent_un_message_clair(dossier):
     class TousEnPanne(FauxGemini):
-        def repondre(self, q, f):
+        def repondre(self, q, f, langue="fr"):
             return main.avec_secours(lambda m: (_ for _ in ()).throw(Erreur(503)), ["a", "b"])
     r = poser(dossier, TousEnPanne())
     assert r["statut"] == "erreur" and "indisponible" in r["reponse"]
@@ -449,3 +450,45 @@ def test_accents_par_la_table_du_francais(brut, attendu):
 ])
 def test_langue_de_la_question(question, anglais):
     assert main.est_en_anglais(question) == anglais
+
+
+# ── Version anglaise ──
+def poser_en(dossier, faux, question, page="en"):
+    fiches, vecteurs = main.charger_index(dossier)
+    return main.traiter(question, "visiteur", faux, fiches, vecteurs, main.Quotas(), page)
+
+
+@pytest.mark.parametrize("question,page,langue", [
+    ("hello", "en", "en"), ("hello", "fr", "fr"), ("Bonjour", "en", "fr"), ("Python?", "en", "en"),
+    ("Can he do deep learning?", "fr", "en"), ("Est-il disponible ?", "en", "fr"),
+])
+def test_langue_de_la_reponse(question, page, langue):
+    assert main.langue_reponse(question, page) == langue
+
+
+def test_chaque_message_fixe_a_sa_traduction():
+    fixes = [*main.REFUS.values(), main.LIMITE["reponse"], main.INDISPONIBLE, main.REPONSE_IDENTITE,
+             *(r for _, r in main.POLITESSES.values())]
+    manquants = [m for m in fixes if m not in main.MESSAGES_EN]
+    assert not manquants
+
+
+@pytest.mark.parametrize("question,attendu", [
+    ("hello", "Hello and welcome"), ("thank you very much", "You're welcome"), ("good evening", "Good evening"),
+    ("What is his phone number?", "For privacy reasons"), ("What is the capital of Australia?", None),
+])
+def test_page_anglaise_messages_en_anglais(dossier, question, attendu):
+    faux = FauxGemini(reponse={"trouve": False, "hors_sujet": True, "reponse": "", "sources": []})
+    r = poser_en(dossier, faux, question)
+    if attendu:
+        assert r["reponse"].startswith(attendu)
+    else:
+        assert r["reponse"] == main.MESSAGES_EN[main.REFUS["hors-sujet"]]
+
+
+def test_gemini_recoit_la_langue(dossier):
+    faux = FauxGemini()
+    poser_en(dossier, faux, "Python?")
+    assert faux.langue_demandee == "en"
+    poser_en(dossier, faux, "Quels outils utilise-t-il ?")
+    assert faux.langue_demandee == "fr"
