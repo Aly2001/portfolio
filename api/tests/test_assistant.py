@@ -311,3 +311,19 @@ def test_autre_erreur_400_pas_masquee():
 def test_reponse_toujours_en_texte_propre(dossier, brut, attendu):
     faux = FauxGemini(reponse={"trouve": True, "reponse": brut, "sources": ["projet-a"]})
     assert poser(dossier, faux)["reponse"] == attendu
+
+
+@pytest.mark.parametrize("question", ["mais comment vous repondez aux question sur lui ?", "Comment répondez-vous ?",
+                                      "D'où viennent tes informations ?", "Qui vous a conçu ?", "Êtes-vous une IA ?",
+                                      "Sur quoi vous basez-vous ?"])
+def test_questions_sur_l_assistant(dossier, question):
+    faux = FauxGemini()
+    r = poser(dossier, faux, question=question)
+    assert r["famille"] == "fonctionnement" and faux.appels_reponse == 0
+    assert "CV" not in r["reponse"] and "!" not in r["reponse"]
+
+
+@pytest.mark.parametrize("question", ["Comment fonctionne Nora ?", "Comment a-t-il construit Quai Nord ?",
+                                      "Comment le contacter ?"])
+def test_questions_sur_aly_pas_confondues(dossier, question):
+    assert poser(dossier, FauxGemini(), question=question).get("famille") != "fonctionnement"

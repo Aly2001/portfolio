@@ -158,6 +158,8 @@ Règles strictes :
 - Tu peux raisonner à partir des fiches pour répondre à une question indirecte (« Est-il à l'aise
   avec Python ? », « Pourquoi le recruter ? ») : appuie-toi alors sur des faits précis (projets,
   expérience, outils), sans rien ajouter qui n'y figure pas.
+- Si on te demande ses certificats ou certifications, présente ses formations complémentaires
+  en précisant qu'il s'agit de formations.
 - Si on te demande un lien, donne l'adresse complète telle qu'elle figure dans les fiches.
   Si on demande le portfolio, précise que le visiteur s'y trouve déjà (alykeita.com).
 - Réponds dans la langue de la question (français ou anglais).
@@ -406,6 +408,26 @@ def corriger(mot: str) -> str:
     return proche[0] if proche else mot
 
 
+# Questions sur l'assistant lui-même (« Comment répondez-vous ? », « Qui vous a conçu ? »,
+# « Êtes-vous une IA ? ») : reconnues par le code, réponse transparente et fixe.
+# Elles visent l'assistant (tu / vous) : « Comment fonctionne Nora ? » n'est pas concerné.
+FONCTIONNEMENT = re.compile(
+    r"(?i)\b(comment|d['’]?\s*o[uù]|o[uù]|sur quoi|à partir de quoi|a partir de quoi)\b.{0,30}"
+    r"\b(r[ée]ponds|r[ée]pondez|fonctionnes|fonctionnez|marches|tires|tirez|trouves|trouvez|sais|savez|"
+    r"connais|connaissez|bases?[- ](tu|vous))\b"
+    r"|\bqui\s+(t['’]|vous)\s*a\s+(cr[ée]{1,2}e?|con[çc]ue?|fait|programm[ée]e?|d[ée]velopp[ée]e?)"
+    r"|\b(es[- ]tu|[êe]tes[- ]vous|tu es|vous [êe]tes)\s+(une?|un vrai|une vraie)\s+(ia|robot|bot|humain|personne|intelligence)"
+    r"|\b(tes|vos)\s+(sources|informations|donn[ée]es|connaissances)\b"
+    r"|\b(te|vous)\s+bas(es|ez)\b|\bbas(es|ez)[- ](tu|vous)\b"
+)
+REPONSE_FONCTIONNEMENT = (
+    "Je suis un assistant IA conçu par Aly Keita lui-même. Je réponds uniquement à partir des informations "
+    "qu'il a rassemblées sur son parcours, ses compétences, ses projets et sa disponibilité : je recherche "
+    "les éléments qui correspondent à votre question, puis je rédige une réponse sans rien inventer. "
+    "Cet assistant est d'ailleurs l'un de ses projets d'IA générative. Vous pouvez par exemple me demander :"
+)
+
+
 SALUTATION_INITIALE = re.compile(r"(?i)^\s*(bonjour|bonsoir|salut|hello|coucou|hey|rebonjour)\b[\s,;:!.]*")
 
 
@@ -416,6 +438,8 @@ def politesse(question: str):
     (« comment allez vous » avant « vous »). S'il reste un seul mot qui n'est ni une
     formule ni un mot d'accompagnement, c'est une vraie question : on renvoie None.
     """
+    if FONCTIONNEMENT.search(question):
+        return "fonctionnement", REPONSE_FONCTIONNEMENT
     mots = [corriger(m) for m in simplifier(question).split()]
     if not mots or len(mots) > 10:
         return None

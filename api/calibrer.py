@@ -33,6 +33,7 @@ QUESTIONS = [
     ("Pourquoi devrais-je le recruter ?", "repond"),
     ("Quel est son lien LinkedIn ?", "repond"),
     ("A-t-il une chaîne YouTube ?", "repond"),
+    ("A-t-il des certificats ?", "repond"),
     ("What kind of internship is he looking for?", "repond"),
     ("Quel est son plus grand défaut ?", "absent"),
     ("Est-il meilleur que les autres candidats ?", "absent"),

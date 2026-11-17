@@ -40,8 +40,11 @@ ajouter('atouts', { libelle: 'Présentation', sous: 'Accueil', ancre: '#accueil'
   `il couvre à la fois l'analyse de données (SQL, Power BI) et le machine learning et l'IA générative (RAG, Gemini) ; ` +
   `il déploie dans le cloud (Google Cloud, Docker, Firebase) et ajoute des contrôles par le code et des tests automatisés.`)
 
+// Un recruteur dit « certificats », « certifications » ou « formations » : la fiche
+// emploie ces trois mots, pour être retrouvée quelle que soit la formulation.
 ajouter('formations-complementaires', { libelle: 'Parcours', sous: 'Parcours', ancre: '#parcours' },
-  `Formations complémentaires suivies par ${profil.nom} : ${formations.join(' ; ')}.`)
+  `Certifications, certificats et formations complémentaires d'${profil.nom} : ${formations.join(' ; ')}. ` +
+  'Il s\'agit de formations suivies en dehors de son master.')
 
 ajouter('interets', { libelle: 'Présentation', sous: 'Accueil', ancre: '#accueil' },
   `Centres d'intérêt de ${profil.nom} : ${interets.join(' ; ')}.`)
