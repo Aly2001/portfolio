@@ -23,6 +23,7 @@ import re
 import threading
 import time
 import difflib
+import html
 import unicodedata
 from datetime import datetime, timezone
 from pathlib import Path
@@ -144,6 +145,8 @@ Règles strictes :
 - Réponds UNIQUEMENT avec les informations des fiches fournies. N'invente rien.
 - Si les fiches ne permettent pas de répondre, mets "trouve" à false.
 - Parle d'Aly à la troisième personne, en français, en 2 à 4 phrases, sans mise en forme.
+- Écris en texte brut, avec les vrais caractères accentués (é, è, à) : jamais de code HTML
+  ni d'entités comme « &#233; ».
 - Ton professionnel, courtois et sobre, comme un assistant de recrutement : vouvoiement,
   aucune familiarité, aucune exclamation, aucun emoji.
 - Réponds naturellement, comme quelqu'un qui connaît bien Aly : ne mentionne JAMAIS son CV,
@@ -327,6 +330,17 @@ ATTRIBUTION_PARENTHESE = re.compile(
 )
 
 
+def texte_propre(texte: str) -> str:
+    """Remet en texte normal ce que l'IA renvoie parfois codé pour le web :
+    « disponibilit&#233; » devient « disponibilité », « d''études » devient « d'études ».
+    Règle générale, appliquée à toutes les réponses avant qu'elles soient affichées."""
+    for _ in range(2):  # deux passes : certains textes sont codés deux fois (&amp;#233;)
+        texte = html.unescape(texte)
+    texte = re.sub(r"<[^>]{1,40}>", "", texte)       # aucune balise HTML
+    texte = re.sub(r"(['’])\1+", r"\1", texte)      # apostrophes doublées
+    return " ".join(texte.split())
+
+
 def discret(texte: str) -> str:
     texte = ATTRIBUTION_PARENTHESE.sub("", texte)
     texte = ATTRIBUTION.sub("", texte).strip()
@@ -458,7 +472,7 @@ def traiter(question: str, visiteur: str, moteur, fiches, vecteurs, quotas: Quot
     # Vérifications par le code
     ids_envoyes = {f["id"]: f for f in envoyees}
     sources = [ids_envoyes[i] for i in dict.fromkeys(brut.get("sources", [])) if i in ids_envoyes]
-    texte = discret(str(brut.get("reponse", "")).strip())
+    texte = discret(texte_propre(str(brut.get("reponse", "")).strip()))
     if (not brut.get("trouve") or not sources or not texte or TELEPHONE.search(texte)
             or liens_inconnus(texte, fiches)):
         return refus(restantes)

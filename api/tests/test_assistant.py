@@ -300,3 +300,14 @@ def test_autre_erreur_400_pas_masquee():
         raise Refus400("400 INVALID_ARGUMENT: clé invalide")
     with pytest.raises(Refus400):
         main.appel_avec_reflexion(appel, "principal")
+
+
+@pytest.mark.parametrize("brut,attendu", [
+    ("Il recherche un stage de fin d''&#233;tudes, disponibilit&#233; &#224; compter de f&#233;vrier.",
+     "Il recherche un stage de fin d'études, disponibilité à compter de février."),
+    ("Mobilit&amp;#233; France enti&#232;re.", "Mobilité France entière."),
+    ("Il parle <b>français</b>.", "Il parle français."),
+])
+def test_reponse_toujours_en_texte_propre(dossier, brut, attendu):
+    faux = FauxGemini(reponse={"trouve": True, "reponse": brut, "sources": ["projet-a"]})
+    assert poser(dossier, faux)["reponse"] == attendu
