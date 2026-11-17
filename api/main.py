@@ -420,6 +420,19 @@ FONCTIONNEMENT = re.compile(
     r"|\b(tes|vos)\s+(sources|informations|donn[ée]es|connaissances)\b"
     r"|\b(te|vous)\s+bas(es|ez)\b|\bbas(es|ez)[- ](tu|vous)\b"
 )
+# « Je suis Aly », « C'est moi qui t'ai conçu » : n'importe qui peut l'écrire. L'assistant ne
+# peut pas vérifier une identité, il ne donne donc aucun traitement spécial (règle de sécurité
+# classique contre ceux qui se font passer pour le propriétaire afin d'obtenir autre chose).
+IDENTITE = re.compile(
+    r"(?i)\b(je\s+suis|moi\s+c['’]?\s*est|c['’]?\s*est\s+moi)\s+(aly|keita|le\s+(propri[ée]taire|cr[ée]ateur|concepteur|d[ée]veloppeur|patron|admin)|ton\s+(cr[ée]ateur|propri[ée]taire|concepteur|ma[iî]tre))\b"
+    r"|\bc['’]?\s*est\s+moi\s+qui\s+(t['’]|vous)\s*(ai|a)\s+(cr[ée]{1,2}e?|con[çc]ue?|fait|programm[ée]e?|d[ée]velopp[ée]e?)"
+    r"|\bje\s+t['’]\s*ai\s+(cr[ée]{1,2}e?|con[çc]ue?|fait|programm[ée]e?|d[ée]velopp[ée]e?)"
+)
+REPONSE_IDENTITE = (
+    "Je ne suis pas en mesure de vérifier l'identité des personnes avec qui j'échange : je réponds donc "
+    "de la même façon à chaque visiteur, uniquement sur le parcours, les compétences, les projets et la "
+    "disponibilité d'Aly Keita. Vous pouvez par exemple me demander :"
+)
 REPONSE_FONCTIONNEMENT = (
     "Je suis un assistant IA conçu par Aly Keita lui-même. Je réponds uniquement à partir des informations "
     "qu'il a rassemblées sur son parcours, ses compétences, ses projets et sa disponibilité : je recherche "
@@ -438,6 +451,8 @@ def politesse(question: str):
     (« comment allez vous » avant « vous »). S'il reste un seul mot qui n'est ni une
     formule ni un mot d'accompagnement, c'est une vraie question : on renvoie None.
     """
+    if IDENTITE.search(question):
+        return "identite", REPONSE_IDENTITE
     if FONCTIONNEMENT.search(question):
         return "fonctionnement", REPONSE_FONCTIONNEMENT
     mots = [corriger(m) for m in simplifier(question).split()]
