@@ -6,7 +6,7 @@
 // ─────────────────────────────────────────────────────────────
 import { writeFileSync } from 'node:fs'
 import { createHash } from 'node:crypto'
-import { profil, projets, parcours, langues, competences, ETATS, lieu } from '../src/data/profil.js'
+import { profil, projets, parcours, langues, competences, ETATS, lieu, quaiNord, recherche, formations, interets } from '../src/data/profil.js'
 
 const fiches = []
 const ajouter = (id, source, texte) => {
@@ -18,13 +18,47 @@ ajouter('profil', { libelle: 'Présentation', sous: 'Accueil', ancre: '#accueil'
   `Sa devise : « ${profil.accroche} » Il collecte, nettoie et modélise les données, puis en fait des outils que les gens utilisent vraiment. ` +
   'Domaines : data analyse, data science, data engineering, machine learning et IA générative.')
 
+// Disponibilité : une fiche par façon de poser la question (date, type de poste),
+// pour que la recherche par le sens la retrouve quelle que soit la formulation.
 ajouter('disponibilite', { libelle: 'Me contacter', sous: 'Contact', ancre: '#contact' },
-  `${profil.nom} est ${profil.disponible ? 'ouvert aux opportunités : stage, projet data ou collaboration' : 'actuellement en poste'}, ` +
-  `mobile ${profil.mobilite}. Il est basé à ${profil.ville}. Pour en discuter, le plus simple est de lui écrire à ${profil.email}.`)
+  `${profil.nom} recherche un ${recherche.type}, disponible à partir de ${recherche.debut}, ` +
+  `avec une mobilité ${recherche.mobilite}. Il vit à Boulogne-sur-Mer et étudie à ${profil.ville}. ` +
+  `Pour lui proposer un stage ou un entretien, il suffit de lui écrire à ${profil.email}.`)
+
+ajouter('recherche-postes', { libelle: 'Me contacter', sous: 'Contact', ancre: '#contact' },
+  `Postes de stage recherchés par ${profil.nom} : ${recherche.postes.join(' ou ')}. ` +
+  `Domaines visés : ${recherche.domaines}. Stage de 6 mois à partir de ${recherche.debut}, partout en France.`)
+
+// Les atouts : uniquement des faits déjà présents dans le profil, rassemblés pour
+// répondre à « Pourquoi le recruter ? » ou « Quels sont ses points forts ? ».
+const phare = projets.find((p) => p.phare)
+ajouter('atouts', { libelle: 'Présentation', sous: 'Accueil', ancre: '#accueil' },
+  `Points forts d'${profil.nom}, pourquoi le recruter : il mène un projet de bout en bout, de la collecte ` +
+  `des données jusqu'à une application en ligne (${phare.titre}, ${quaiNord.passages} passages analysés, site public) ; ` +
+  `il a une expérience en entreprise comme stagiaire Data Scientist chez Bank Al-Maghreb ; ` +
+  `il obtient des résultats mesurés (93,5 % d'exactitude en analyse de sentiment, R² de 0,89 en régression) ; ` +
+  `il couvre à la fois l'analyse de données (SQL, Power BI) et le machine learning et l'IA générative (RAG, Gemini) ; ` +
+  `il déploie dans le cloud (Google Cloud, Docker, Firebase) et ajoute des contrôles par le code et des tests automatisés.`)
+
+ajouter('formations-complementaires', { libelle: 'Parcours', sous: 'Parcours', ancre: '#parcours' },
+  `Formations complémentaires suivies par ${profil.nom} : ${formations.join(' ; ')}.`)
+
+ajouter('interets', { libelle: 'Présentation', sous: 'Accueil', ancre: '#accueil' },
+  `Centres d'intérêt de ${profil.nom} : ${interets.join(' ; ')}.`)
 
 ajouter('contact', { libelle: 'Me contacter', sous: 'Contact', ancre: '#contact' },
   `Pour contacter ${profil.nom} : e-mail ${profil.email}, LinkedIn ${profil.linkedin}, GitHub ${profil.github}. ` +
   'Son CV est téléchargeable sur le site.')
+
+// Tous les liens d'Aly, réunis : seuls ceux renseignés dans profil.js apparaissent.
+// Le portfolio est le site où se trouve déjà le visiteur.
+const liens = [
+  ['LinkedIn', profil.linkedin], ['GitHub', profil.github], ['site de Quai Nord', projets.find((p) => p.site)?.site],
+  ['chaîne YouTube', profil.youtube], ['TikTok', profil.tiktok],
+].filter(([, url]) => url)
+ajouter('liens', { libelle: 'Me contacter', sous: 'Contact', ancre: '#contact' },
+  `Liens d'${profil.nom} : ` + liens.map(([nom, url]) => `${nom} : ${url}`).join(' ; ') + '. ' +
+  `Son portfolio est ${profil.site} : c'est le site sur lequel se trouve le visiteur.`)
 
 // Un projet = plusieurs petites fiches plutôt qu'une longue.
 // Règle générale : une fiche trop longue « dilue » son sens, et la
@@ -56,7 +90,7 @@ ajouter('langues', { libelle: 'Langues', sous: 'Parcours', ancre: '#parcours' },
 
 competences.forEach((c) => {
   ajouter(`competences-${c.id}`, { libelle: c.domaine, sous: 'Compétences', ancre: `#competence-${c.id}` },
-    `Compétences en ${c.domaine.toLowerCase()} : ${c.outils.join(', ')}.`)
+    `Compétences d'Aly Keita, domaine « ${c.domaine} » : ${c.outils.join(', ')}.`)
 })
 
 // Garde-fou général : aucune fiche ne doit contenir un numéro de téléphone.

@@ -17,10 +17,30 @@ export const profil = {
   email: 'alykeita295@gmail.com',
   linkedin: 'https://www.linkedin.com/in/aly-keita-306703340/',
   github: 'https://github.com/Aly2001',
+  site: 'https://alykeita.com',
+  // Liens que l'assistant peut donner. null = pas encore renseigné : l'assistant n'en parle pas.
+  youtube: 'https://www.youtube.com/@alykeitam',
+  tiktok: null,
 
   // CV PUBLIC (sans numéro de téléphone), dans /public. null = boutons CV masqués.
   cvUrl: '/cv-aly-keita.pdf',
 }
+
+// Ce qu'Aly recherche : lu SEULEMENT par l'assistant (le site reste volontairement
+// général, sans dates). À tenir aligné avec les CV : c'est ici qu'on le met à jour.
+export const recherche = {
+  type: 'stage de fin d\'études de 6 mois',
+  postes: ['Data Scientist', 'Data Analyst'],
+  domaines: 'data science, data analyse, machine learning et IA générative',
+  debut: 'début février 2027',
+  mobilite: 'France entière',
+}
+
+// Formations suivies en dehors du master (assistant seulement).
+export const formations = ['Formation Power BI, Santander Open Academy (terminée, 2026)']
+
+// Centres d'intérêt (assistant seulement).
+export const interets = ["Vulgarisation de l'IA : vidéos TikTok et chaîne YouTube « Après l'Humain »"]
 
 // Chiffres de Quai Nord, à UN seul endroit (ils grandissent chaque nuit).
 export const quaiNord = {
@@ -143,8 +163,8 @@ export const parcours = [
     ville: 'Meknès',
     pays: 'Maroc',
     points: [
-      'Un modèle de prédiction pour évaluer le risque client',
-      "L'analyse des données en SQL et Python, avec des mises à jour automatisées",
+      'Le nettoyage et la préparation de données en Python',
+      "L'analyse des données en SQL et Python, avec l'automatisation de leurs mises à jour",
       "Des tableaux de bord Power BI pour l'aide à la décision",
     ],
   },
@@ -157,10 +177,11 @@ export const parcours = [
 // Une seule façon d'écrire un lieu, partout (site et assistant) : « EILCO, Calais (France) ».
 export const lieu = (e) => `${e.etablissement}, ${e.ville}\u00a0(${e.pays})` // la ville et son pays ne se séparent jamais
 
-export const langues = ['Français courant (C2)', 'Anglais intermédiaire', 'Bambara (langue maternelle)']
+export const langues = ['Français courant (C2)', 'Anglais intermédiaire (B2)', 'Bambara (langue maternelle)']
 
 export const competences = [
-  { id: 'data', domaine: 'Data et machine learning', outils: ['Python', 'Pandas', 'NumPy', 'Scikit-learn', 'TensorFlow', 'PySpark', 'Hadoop', 'SQL'] },
+  { id: 'data', domaine: 'Data et machine learning', outils: ['Python', 'Pandas', 'NumPy', 'Scikit-learn', 'TensorFlow (deep learning)', 'PySpark', 'Hadoop', 'SQL'] },
+  { id: 'analyse', domaine: 'Analyse et BI', outils: ['SQL', 'Power BI', 'Excel', 'Statistiques descriptives', 'Visualisation de données'] },
   { id: 'ia', domaine: 'IA générative', outils: ['LLM', 'RAG', 'NLP', 'Gemini'] },
   { id: 'dev', domaine: 'Développement', outils: ['React', 'Node.js', 'FastAPI', 'Django', 'Flask', 'Java / Spring', 'C / C++', 'Tests', 'Git'] },
   { id: 'bd', domaine: 'Bases de données', outils: ['Oracle', 'MySQL', 'MongoDB', 'Firebase'] },

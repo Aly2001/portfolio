@@ -16,8 +16,48 @@
       "sous": "Contact",
       "ancre": "#contact"
     },
-    "texte": "Aly Keita est ouvert aux opportunités : stage, projet data ou collaboration, mobile partout en France. Il est basé à Calais. Pour en discuter, le plus simple est de lui écrire à alykeita295@gmail.com.",
-    "empreinte": "5fca873fca9d997e"
+    "texte": "Aly Keita recherche un stage de fin d'études de 6 mois, disponible à partir de début février 2027, avec une mobilité France entière. Il vit à Boulogne-sur-Mer et étudie à Calais. Pour lui proposer un stage ou un entretien, il suffit de lui écrire à alykeita295@gmail.com.",
+    "empreinte": "897b85e64d21f140"
+  },
+  {
+    "id": "recherche-postes",
+    "source": {
+      "libelle": "Me contacter",
+      "sous": "Contact",
+      "ancre": "#contact"
+    },
+    "texte": "Postes de stage recherchés par Aly Keita : Data Scientist ou Data Analyst. Domaines visés : data science, data analyse, machine learning et IA générative. Stage de 6 mois à partir de début février 2027, partout en France.",
+    "empreinte": "6499943b8ce7ed26"
+  },
+  {
+    "id": "atouts",
+    "source": {
+      "libelle": "Présentation",
+      "sous": "Accueil",
+      "ancre": "#accueil"
+    },
+    "texte": "Points forts d'Aly Keita, pourquoi le recruter : il mène un projet de bout en bout, de la collecte des données jusqu'à une application en ligne (Quai Nord, 775 550 passages analysés, site public) ; il a une expérience en entreprise comme stagiaire Data Scientist chez Bank Al-Maghreb ; il obtient des résultats mesurés (93,5 % d'exactitude en analyse de sentiment, R² de 0,89 en régression) ; il couvre à la fois l'analyse de données (SQL, Power BI) et le machine learning et l'IA générative (RAG, Gemini) ; il déploie dans le cloud (Google Cloud, Docker, Firebase) et ajoute des contrôles par le code et des tests automatisés.",
+    "empreinte": "212102484e049d3b"
+  },
+  {
+    "id": "formations-complementaires",
+    "source": {
+      "libelle": "Parcours",
+      "sous": "Parcours",
+      "ancre": "#parcours"
+    },
+    "texte": "Formations complémentaires suivies par Aly Keita : Formation Power BI, Santander Open Academy (terminée, 2026).",
+    "empreinte": "ec6a6dc023612bff"
+  },
+  {
+    "id": "interets",
+    "source": {
+      "libelle": "Présentation",
+      "sous": "Accueil",
+      "ancre": "#accueil"
+    },
+    "texte": "Centres d'intérêt de Aly Keita : Vulgarisation de l'IA : vidéos TikTok et chaîne YouTube « Après l'Humain ».",
+    "empreinte": "56145559f432d94d"
   },
   {
     "id": "contact",
@@ -28,6 +68,16 @@
     },
     "texte": "Pour contacter Aly Keita : e-mail alykeita295@gmail.com, LinkedIn https://www.linkedin.com/in/aly-keita-306703340/, GitHub https://github.com/Aly2001. Son CV est téléchargeable sur le site.",
     "empreinte": "d9498cdff1946826"
+  },
+  {
+    "id": "liens",
+    "source": {
+      "libelle": "Me contacter",
+      "sous": "Contact",
+      "ancre": "#contact"
+    },
+    "texte": "Liens d'Aly Keita : LinkedIn : https://www.linkedin.com/in/aly-keita-306703340/ ; GitHub : https://github.com/Aly2001 ; site de Quai Nord : https://quai-nord.web.app ; chaîne YouTube : https://www.youtube.com/@alykeitam. Son portfolio est https://alykeita.com : c'est le site sur lequel se trouve le visiteur.",
+    "empreinte": "2a9d30a8835ecfda"
   },
   {
     "id": "projet-quai-nord",
@@ -206,8 +256,8 @@
       "sous": "Parcours",
       "ancre": "#etape-bank-al-maghreb"
     },
-    "texte": "Été 2024 : Stagiaire Data Scientist, Bank Al-Maghreb, Meknès (Maroc). Un modèle de prédiction pour évaluer le risque client ; L'analyse des données en SQL et Python, avec des mises à jour automatisées ; Des tableaux de bord Power BI pour l'aide à la décision.",
-    "empreinte": "f5b4fd5cfca591fa"
+    "texte": "Été 2024 : Stagiaire Data Scientist, Bank Al-Maghreb, Meknès (Maroc). Le nettoyage et la préparation de données en Python ; L'analyse des données en SQL et Python, avec l'automatisation de leurs mises à jour ; Des tableaux de bord Power BI pour l'aide à la décision.",
+    "empreinte": "8391f9fe0410c5df"
   },
   {
     "id": "parcours-meknes",
@@ -236,8 +286,8 @@
       "sous": "Parcours",
       "ancre": "#parcours"
     },
-    "texte": "Langues parlées par Aly Keita : Français courant (C2), Anglais intermédiaire, Bambara (langue maternelle).",
-    "empreinte": "36a6f5d1c618debc"
+    "texte": "Langues parlées par Aly Keita : Français courant (C2), Anglais intermédiaire (B2), Bambara (langue maternelle).",
+    "empreinte": "255c47aacee41b75"
   },
   {
     "id": "competences-data",
@@ -246,8 +296,18 @@
       "sous": "Compétences",
       "ancre": "#competence-data"
     },
-    "texte": "Compétences en data et machine learning : Python, Pandas, NumPy, Scikit-learn, TensorFlow, PySpark, Hadoop, SQL.",
-    "empreinte": "48e268d9746a7c66"
+    "texte": "Compétences d'Aly Keita, domaine « Data et machine learning » : Python, Pandas, NumPy, Scikit-learn, TensorFlow (deep learning), PySpark, Hadoop, SQL.",
+    "empreinte": "aa15188bbf076c43"
+  },
+  {
+    "id": "competences-analyse",
+    "source": {
+      "libelle": "Analyse et BI",
+      "sous": "Compétences",
+      "ancre": "#competence-analyse"
+    },
+    "texte": "Compétences d'Aly Keita, domaine « Analyse et BI » : SQL, Power BI, Excel, Statistiques descriptives, Visualisation de données.",
+    "empreinte": "16d35a2e07550194"
   },
   {
     "id": "competences-ia",
@@ -256,8 +316,8 @@
       "sous": "Compétences",
       "ancre": "#competence-ia"
     },
-    "texte": "Compétences en ia générative : LLM, RAG, NLP, Gemini.",
-    "empreinte": "fb64afb1009e1b1d"
+    "texte": "Compétences d'Aly Keita, domaine « IA générative » : LLM, RAG, NLP, Gemini.",
+    "empreinte": "b23eb450f0e1724f"
   },
   {
     "id": "competences-dev",
@@ -266,8 +326,8 @@
       "sous": "Compétences",
       "ancre": "#competence-dev"
     },
-    "texte": "Compétences en développement : React, Node.js, FastAPI, Django, Flask, Java / Spring, C / C++, Tests, Git.",
-    "empreinte": "749b621df045b0dd"
+    "texte": "Compétences d'Aly Keita, domaine « Développement » : React, Node.js, FastAPI, Django, Flask, Java / Spring, C / C++, Tests, Git.",
+    "empreinte": "2ee32c617ecf4999"
   },
   {
     "id": "competences-bd",
@@ -276,8 +336,8 @@
       "sous": "Compétences",
       "ancre": "#competence-bd"
     },
-    "texte": "Compétences en bases de données : Oracle, MySQL, MongoDB, Firebase.",
-    "empreinte": "fbdbefe2dc199b78"
+    "texte": "Compétences d'Aly Keita, domaine « Bases de données » : Oracle, MySQL, MongoDB, Firebase.",
+    "empreinte": "1e44dde0dfbc2338"
   },
   {
     "id": "competences-cloud",
@@ -286,7 +346,7 @@
       "sous": "Compétences",
       "ancre": "#competence-cloud"
     },
-    "texte": "Compétences en cloud et visualisation : Google Cloud, Firebase, Docker, Power BI, Matplotlib, Seaborn.",
-    "empreinte": "e7b75f8d69de197d"
+    "texte": "Compétences d'Aly Keita, domaine « Cloud et visualisation » : Google Cloud, Firebase, Docker, Power BI, Matplotlib, Seaborn.",
+    "empreinte": "df6cb29dd85a56e3"
   }
 ]

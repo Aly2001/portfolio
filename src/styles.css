@@ -294,6 +294,7 @@ body.assistant-ouvert { overflow: hidden; }
   padding: 12px 14px; border-radius: 4px 12px 12px 12px; background: var(--surface);
   box-shadow: inset 0 0 0 1px var(--filet); font-size: 15px; line-height: 1.5; overflow-wrap: anywhere;
 }
+.annonce__bulle a { color: var(--ocre); text-decoration: underline; text-underline-offset: 3px; overflow-wrap: anywhere; }
 .annonce__email {
   display: inline-flex; align-items: center; gap: 8px; min-height: 44px; margin-top: 10px; padding: 0 14px;
   border-radius: 4px; background: var(--ocre); color: var(--encre-ocre); font-weight: 700; font-size: 14px; text-decoration: none;

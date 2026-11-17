@@ -4,17 +4,17 @@ import { ASSISTANT_URL } from '../config.js'
 import Icone from './Icone.jsx'
 
 const SUGGESTIONS = [
-  'Quelle expérience en machine learning ?',
-  'Parle-moi de Quai Nord',
-  'Quelles technologies cloud ?',
-  'Est-il disponible pour un stage ?',
+  'Quel stage recherche-t-il, et à partir de quand ?',
+  'Quelle est son expérience en data science ?',
+  'Quelles sont ses compétences en analyse de données ?',
+  'Présentez-moi le projet Quai Nord',
 ]
 const ACCUEIL =
-  "Bonjour ! Je suis l'assistant d'Aly. Posez-moi une question sur son parcours, ses compétences ou ses projets."
+  "Bonjour et bienvenue. Je suis l'assistant virtuel d'Aly Keita : je peux vous renseigner sur son parcours, ses compétences, ses projets et sa disponibilité."
 const HORS_SERVICE =
-  "L'assistant n'est pas encore branché. En attendant, vous pouvez écrire directement à Aly."
-const INDISPONIBLE = "L'assistant est momentanément indisponible. Vous pouvez écrire directement à Aly."
-const TROP_LONG = "L'assistant met trop de temps à répondre. Réessayez dans un instant, ou écrivez directement à Aly."
+  "L'assistant n'est pas encore disponible. Je vous invite à contacter Aly directement par e-mail."
+const INDISPONIBLE = "L'assistant est momentanément indisponible. Je vous invite à réessayer dans un instant, ou à contacter Aly directement par e-mail."
+const TROP_LONG = "La réponse prend plus de temps que prévu. Je vous invite à réessayer dans un instant, ou à contacter Aly directement par e-mail."
 // Au-delà, on arrête d'attendre : le serveur abandonne de lui-même après 20 s par appel.
 const DELAI_MAX_MS = 30000
 
@@ -31,6 +31,23 @@ function avecSuggestions(m) {
   return ['accueil', 'politesse'].includes(m.statut) || (m.statut === 'refus' && m.famille === 'hors-sujet')
 }
 
+// Rend cliquables les adresses web et e-mail d'une réponse. Le serveur a déjà vérifié
+// que chaque lien figure dans le profil d'Aly : aucune adresse inconnue n'arrive ici.
+const MOTIF_LIEN = /([\w.+-]+@[\w-]+\.[\w.]+|(?:https?:\/\/)?(?:[a-z0-9-]+\.)+(?:com|fr|app|io|net|org|dev|me|ai)(?:\/[^\s),;]*)?)/gi
+function TexteAvecLiens({ texte }) {
+  return texte.split(MOTIF_LIEN).map((morceau, i) => {
+    if (i % 2 === 0) return morceau
+    const propre = morceau.replace(/[.,;:!?»]+$/, '')
+    const reste = morceau.slice(propre.length)
+    const href = propre.includes('@') ? `mailto:${propre}` : (propre.startsWith('http') ? propre : `https://${propre}`)
+    return (
+      <span key={i}>
+        <a href={href} target={propre.includes('@') ? undefined : '_blank'} rel="noopener noreferrer">{propre}</a>{reste}
+      </span>
+    )
+  })
+}
+
 function BoutonEmail() {
   return <a className="annonce__email" href={`mailto:${profil.email}`}><Icone nom="mail" taille={16} />Écrire à Aly</a>
 }
@@ -39,7 +56,7 @@ function Reponse({ m, onSource }) {
   return (
     <div className="annonce">
       <div className="annonce__bulle">
-        <p>{m.texte}</p>
+        <p><TexteAvecLiens texte={m.texte} /></p>
         {avecEmail(m) && <BoutonEmail />}
       </div>
       {m.sources?.length > 0 && (
