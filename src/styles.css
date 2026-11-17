@@ -380,13 +380,19 @@ body.assistant-ouvert { overflow: hidden; }
   *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
 }
 
-/* ── Sélecteur de langue FR | EN (maquette B : pastille) ── */
+/* ── Sélecteur de langue FR | EN (maquette B : pastille) ──
+   Ordinateur : dans le menu, à côté du CV. Téléphone : dans la barre du haut, sans ouvrir le menu. */
 .langues-choix { display: inline-flex; border: 1px solid rgba(255, 255, 255, 0.18); border-radius: 999px; padding: 2px; }
-.entete__nav .langues-choix a {
-  min-height: 0; padding: 5px 11px; border-radius: 999px; font-size: 13px; line-height: 1.2; letter-spacing: 0.03em;
-  color: var(--texte-doux); text-decoration: none;
+.entete .langues-choix a {
+  display: inline-flex; align-items: center; min-height: 0; padding: 5px 11px; border-radius: 999px;
+  font-size: 13px; font-weight: 600; line-height: 1.2; letter-spacing: 0.03em; color: var(--texte-doux); text-decoration: none;
 }
-.entete__nav .langues-choix a:hover { color: var(--ocre); }
-.entete__nav .langues-choix a.est-actif { background: var(--ocre); color: #141615; font-weight: 600; }
-.entete__nav .langues-choix a:focus-visible { outline: 2px solid var(--ocre); outline-offset: 2px; }
-@media (max-width: 720px) { .entete__nav .langues-choix { align-self: flex-start; margin-top: 4px; } }
+.entete .langues-choix a:hover { color: var(--ocre); }
+.entete .langues-choix a.est-actif { background: var(--ocre); color: #141615; }
+.entete .langues-choix a:focus-visible { outline: 2px solid var(--ocre); outline-offset: 2px; }
+.langues-choix--barre { display: none; }
+@media (max-width: 720px) {
+  .langues-choix--barre { display: inline-flex; margin-left: auto; }
+  .langues-choix--menu { display: none; }
+  .entete .langues-choix a { padding: 7px 12px; }   /* plus facile à toucher du doigt */
+}

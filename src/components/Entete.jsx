@@ -6,10 +6,10 @@ const LIENS = ['projets', 'competences', 'parcours', 'contact'].map((id) => ({ h
 
 // Sélecteur FR | EN (maquette B validée) : chaque langue est une vraie page, donc un vrai lien.
 // Le choix est mémorisé pour ne plus être redirigé automatiquement (voir main.jsx).
-function Langues() {
+function Langues({ classe }) {
   const choisir = (l) => { try { localStorage.setItem('langue', l) } catch { /* navigation privée : sans importance */ } }
   return (
-    <span className="langues-choix" role="group" aria-label={T.langue}>
+    <span className={`langues-choix ${classe}`} role="group" aria-label={T.langue}>
       {['fr', 'en'].map((l) => (
         <a key={l} href={ADRESSES[l]} hrefLang={l} lang={l} onClick={() => choisir(l)}
           className={l === LANGUE ? 'est-actif' : undefined} aria-current={l === LANGUE ? 'true' : undefined}>
@@ -26,13 +26,15 @@ export default function Entete() {
     <header className="entete">
       <div className="conteneur entete__ligne">
         <a href="#accueil" className="entete__nom">{profil.nom}<span className="ocre">.</span></a>
+        {/* Sur téléphone, la pastille est dans la barre du haut (visible sans ouvrir le menu). */}
+        <Langues classe="langues-choix--barre" />
         <button type="button" className="entete__menu" aria-expanded={ouvert} aria-controls="navigation"
           aria-label={ouvert ? T.menuFermer : T.menuOuvrir} onClick={() => setOuvert(!ouvert)}>
           <Icone nom={ouvert ? 'fermer' : 'menu'} taille={20} />
         </button>
         <nav id="navigation" aria-label={T.sections} className={`entete__nav${ouvert ? ' est-ouvert' : ''}`}>
           {LIENS.map((l) => <a key={l.href} href={l.href} onClick={() => setOuvert(false)}>{l.texte}</a>)}
-          <Langues />
+          <Langues classe="langues-choix--menu" />
           {profil.cvUrl && (
             <a className="bouton bouton--plein bouton--petit" href={profil.cvUrl} download>CV <Icone nom="telecharger" taille={16} /></a>
           )}
