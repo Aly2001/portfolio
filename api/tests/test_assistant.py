@@ -427,3 +427,25 @@ def test_pas_confondu_avec_le_telephone(dossier, question):
 
 def test_la_consigne_interdit_les_sentiments_inventes():
     assert "mot pour mot" in main.CONSIGNE and "très intéressé" in main.CONSIGNE
+
+
+@pytest.mark.parametrize("brut,attendu", [
+    ("Il la maitrise aux cotes de Python, dans son domaine dedie a la data.",
+     "Il la maîtrise aux côtés de Python, dans son domaine dédié à la data."),
+    ("Il est tres interesse apres son stage.", "Il est très intéressé après son stage."),
+    ("La société a recruté Aly. Il a été conçu.", "La société a recruté Aly. Il a été conçu."),
+    ("Son code est sur https://github.com/Aly2001/prediction_prix_de_maison et il utilise Git.",
+     "Son code est sur https://github.com/Aly2001/prediction_prix_de_maison et il utilise Git."),
+    ("Ou est-il ? Il a la nationalite.", "Ou est-il ? Il a la nationalité."),
+])
+def test_accents_par_la_table_du_francais(brut, attendu):
+    fiches = [{"texte": "Il utilise Git et Python."}]
+    assert main.reaccentuer(brut, main.vocabulaire_accentue(fiches)) == attendu
+
+
+@pytest.mark.parametrize("question,anglais", [
+    ("can he do deep learning ?", True), ("What is his experience?", True), ("Does he speak English?", True),
+    ("Est-il à l'aise avec Python ?", False), ("Quel stage recherche-t-il ?", False), ("et pour la BI il connait quoi", False),
+])
+def test_langue_de_la_question(question, anglais):
+    assert main.est_en_anglais(question) == anglais

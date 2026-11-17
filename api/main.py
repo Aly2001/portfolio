@@ -223,11 +223,13 @@ class Gemini:
         from google.genai import types
 
         contexte = "\n\n".join(f"[{f['id']}] {f['texte']}" for f in fiches)
+        # Le modèle léger répond parfois en français à une question en anglais : on le lui rappelle.
+        langue = "\n\n(Question en anglais : écris la réponse en anglais.)" if est_en_anglais(question) else ""
 
         def appel(niveau):
             return self.client.models.generate_content(
                 model=modele,
-                contents=f"FICHES :\n{contexte}\n\nQUESTION : {question}",
+                contents=f"FICHES :\n{contexte}\n\nQUESTION : {question}{langue}",
                 config=types.GenerateContentConfig(
                     system_instruction=CONSIGNE,
                     response_mime_type="application/json",
@@ -414,47 +416,84 @@ def sans_accents(mot: str) -> str:
     return unicodedata.normalize("NFD", mot).encode("ascii", "ignore").decode().lower()
 
 
-def vocabulaire_accentue(fiches) -> dict[str, str]:
-    """Mots accentués des fiches, retrouvables par leur forme sans accent : « maitrise » -> « maîtrise ».
-    Un mot qui existe sous deux formes (« a » et « à ») est écarté : on ne devine jamais."""
+# Table du français « mot sans accent -> mot accentué » (fabriquée par accents.py à partir d'un
+# dictionnaire de fréquences) : « maitrise » -> « maîtrise », « dedie » -> « dédié ».
+# Les mots dont les deux formes sont courantes (« a / à », « ou / où ») n'y sont pas.
+try:
+    with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "accents.json"), encoding="utf-8") as _f:
+        ACCENTS: dict[str, str] = json.load(_f)
+except OSError:
+    ACCENTS = {}
+
+
+def vocabulaire_accentue(fiches) -> tuple[dict[str, str], set[str]]:
+    """Ce que les fiches apprennent sur l'orthographe :
+    - les mots qu'elles écrivent toujours avec accents (« conçu ») ;
+    - les mots qu'elles écrivent SANS accent (« Git », « prediction » d'un nom de dépôt) :
+      ceux-là sont protégés, jamais modifiés."""
     formes: dict[str, set[str]] = {}
     for f in fiches:
         for m in MOT.findall(f["texte"]):
             formes.setdefault(sans_accents(m), set()).add(m.lower())
-    return {nu: next(iter(fs)) for nu, fs in formes.items() if len(fs) == 1 and next(iter(fs)) != nu}
+    accentues = {nu: next(iter(fs)) for nu, fs in formes.items() if len(fs) == 1 and next(iter(fs)) != nu}
+    proteges = {nu for nu, fs in formes.items() if nu in fs}
+    return accentues, proteges
 
 
-ANGLAIS = {"the", "and", "he", "his", "is", "with", "has", "of", "for", "in", "an", "to", "are", "was"}
-FRANCAIS = {"le", "la", "les", "et", "il", "est", "de", "des", "du", "un", "une", "à", "en", "sa", "son", "ses"}
+ANGLAIS = {"the", "and", "he", "his", "him", "she", "her", "is", "with", "has", "of", "for", "in", "an", "to", "are",
+           "was", "can", "does", "do", "what", "who", "how", "where", "when", "which", "you", "your", "it"}
+FRANCAIS = {"le", "la", "les", "et", "il", "est", "de", "des", "du", "un", "une", "à", "en", "sa", "son", "ses",
+            "quel", "quelle", "quels", "quelles", "qui", "que", "quoi", "comment", "où", "a-t-il", "est-ce"}
 
 
 def est_en_anglais(texte: str) -> bool:
-    mots = [m.lower() for m in MOT.findall(texte)]
+    mots = [m.lower() for m in re.findall(r"[A-Za-zÀ-ÿ'-]+", texte)]
     return sum(m in ANGLAIS for m in mots) > sum(m in FRANCAIS for m in mots)
 
 
-def reaccentuer(texte: str, vocabulaire: dict[str, str]) -> str:
+URL_OU_EMAIL = re.compile(r"https?://\S+|www\.\S+|[\w.+-]+@[\w-]+\.[\w.]+")
+
+
+def reaccentuer(texte: str, vocabulaire) -> str:
     """Le modèle léger oublie parfois les accents (« vit a Boulogne », « il maitrise »).
-    Règle générale : un mot sans accent dont les fiches ne connaissent QUE la forme accentuée
-    reprend ses accents. Le vocabulaire vient des fiches : rien n'est inventé. Une réponse en
-    anglais n'est pas touchée (« experience », « a Data Scientist » y sont corrects)."""
+    Un mot sans accent reprend ses accents d'après les fiches d'abord, puis d'après la table du
+    français. Jamais touchés : les mots que les fiches écrivent sans accent (Git…), les liens et
+    e-mails, et une réponse en anglais (« experience », « a Data Scientist » y sont corrects)."""
     if est_en_anglais(texte):
         return texte
+    accentues, proteges = vocabulaire if isinstance(vocabulaire, tuple) else (vocabulaire, set())
+
     def remplacer(m):
         mot = m.group(0)
-        if not mot.isascii():
+        bas = mot.lower()
+        if not mot.isascii() or bas in proteges:
             return mot
-        juste = vocabulaire.get(mot.lower())
+        juste = accentues.get(bas) or ACCENTS.get(bas)
         if not juste:
             return mot
         return juste.upper() if mot.isupper() and len(mot) > 1 else (juste[:1].upper() + juste[1:] if mot[:1].isupper() else juste)
-    texte = MOT.sub(remplacer, texte)
-    # « a » sans accent devant un lieu ou dans « a partir de » est forcément « à » :
-    # « il vit a Boulogne », « disponible a partir de février ». (« Il a Python » n'existe pas.)
-    return A_SANS_ACCENT.sub(lambda m: ("À" if m.group(1) == "A" else "à") + m.group(2), texte)
+
+    def corriger(morceau: str) -> str:
+        morceau = MOT.sub(remplacer, morceau)
+        # « a » est forcément « à » devant un lieu, dans « a partir de », ou juste après un participe
+        # (« dédié a la data », « intéressé a »). « Il a Python », « Aly a été » restent intacts.
+        morceau = A_SANS_ACCENT.sub(lambda m: ("À" if m.group(1) == "A" else "à") + m.group(2), morceau)
+        return A_APRES_PARTICIPE.sub(
+            lambda m: m.group(0) if (m.group(1) or "").lower() in DETERMINANTS else m.group(0)[:-1] + "à", morceau)
+
+    morceaux, fin = [], 0
+    for lien in URL_OU_EMAIL.finditer(texte):           # les liens et e-mails restent tels quels
+        morceaux += [corriger(texte[fin:lien.start()]), lien.group(0)]
+        fin = lien.end()
+    morceaux.append(corriger(texte[fin:]))
+    return "".join(morceaux)
 
 
 A_SANS_ACCENT = re.compile(r"\b([aA])(\s+(?:partir|compter|(?!Aly\b)[A-ZÀ-Ý]))")
+# Le mot en « é » doit être un participe (« dédié a ») et non un nom précédé d'un déterminant
+# (« la société a recruté » garde son « a »).
+A_APRES_PARTICIPE = re.compile(r"(?:\b(\w+)['’\s]+)?\b\w+(?:é|ée|és|ées)\s+a(?=\s)")
+DETERMINANTS = {"la", "le", "l", "une", "un", "sa", "son", "ses", "cette", "ce", "cet", "leur", "notre", "votre", "chaque", "toute", "tout", "les", "des", "aucune", "aucun"}
 
 
 def discret(texte: str) -> str:
