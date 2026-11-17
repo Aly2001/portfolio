@@ -6,7 +6,7 @@
 // ─────────────────────────────────────────────────────────────
 import { writeFileSync } from 'node:fs'
 import { createHash } from 'node:crypto'
-import { profil, projets, parcours, langues, competences, ETATS, lieu, quaiNord, recherche, formations, interets } from '../src/data/profil.js'
+import { profil, projets, parcours, langues, competences, ETATS, lieu, quaiNord, recherche, formations, interets, assistant, methode } from '../src/data/profil.js'
 
 const fiches = []
 const ajouter = (id, source, texte) => {
@@ -45,6 +45,15 @@ ajouter('atouts', { libelle: 'Présentation', sous: 'Accueil', ancre: '#accueil'
 ajouter('formations-complementaires', { libelle: 'Parcours', sous: 'Parcours', ancre: '#parcours' },
   `Certifications, certificats et formations complémentaires d'${profil.nom} : ${formations.join(' ; ')}. ` +
   'Il s\'agit de formations suivies en dehors de son master.')
+
+// L'assistant lui-même : « Comment es-tu conçu ? », « Es-tu une IA ? », « Sur quoi te bases-tu ? ».
+ajouter('assistant', { libelle: 'Assistant IA', sous: 'Accueil', ancre: '#accueil' },
+  `L'assistant IA de ce portfolio (celui qui répond aux visiteurs) a été ${assistant.concepteur}. ` +
+  `Principe : ${assistant.principe}. Technique : ${assistant.technique}. Contrôles : ${assistant.controles}. ` +
+  `Limites : ${assistant.limites}.`)
+
+ajouter('methode', { libelle: 'Présentation', sous: 'Accueil', ancre: '#accueil' },
+  `Méthode de travail d'${profil.nom}, sa façon de mener un projet data ou IA : ${methode.join(' ; ')}.`)
 
 ajouter('interets', { libelle: 'Présentation', sous: 'Accueil', ancre: '#accueil' },
   `Centres d'intérêt de ${profil.nom} : ${interets.join(' ; ')}.`)

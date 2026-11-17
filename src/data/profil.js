@@ -42,6 +42,29 @@ export const formations = ['Formation Power BI, Santander Open Academy (terminé
 // Centres d'intérêt (assistant seulement).
 export const interets = ["Vulgarisation de l'IA : vidéos TikTok et chaîne YouTube « Après l'Humain »"]
 
+// L'assistant du portfolio, tel qu'il se présente quand on l'interroge sur lui-même
+// (assistant seulement). Uniquement des faits vérifiables dans le code de l'API.
+export const assistant = {
+  concepteur: 'conçu et développé par Aly Keita lui-même ; c\'est l\'un de ses projets d\'IA générative',
+  principe:
+    "il fonctionne par RAG (génération augmentée par récupération) : le profil d'Aly est découpé en fiches, transformées en vecteurs par un modèle d'embedding Gemini ; à chaque question, les fiches sont classées par proximité de sens, puis un modèle Gemini rédige la réponse uniquement à partir d'elles",
+  technique: "une API en Python (FastAPI) déployée sur Google Cloud Run, appelée par le site en React",
+  controles:
+    "le code vérifie chaque réponse avant de l'afficher : les liens inventés et les numéros de téléphone sont bloqués, les tentatives de détournement sont refusées, le nombre de questions par jour est limité et l'adresse IP n'est jamais conservée en clair ; des tests automatisés contrôlent ces règles",
+  limites:
+    "il ne connaît que le profil professionnel d'Aly, traite chaque question séparément sans garder l'historique de la conversation, et ne peut pas vérifier l'identité de la personne qui lui écrit",
+}
+
+// Sa façon de travailler (assistant seulement), tirée de ses projets.
+export const methode = [
+  "partir d'un problème concret et réel",
+  'collecter les données et les nettoyer avant toute analyse',
+  'explorer avant de conclure : ne jamais croire le premier graphique',
+  "évaluer les modèles sur des données qu'ils n'ont jamais vues",
+  "livrer un outil réellement utilisé (site, API, application), déployé dans le cloud",
+  "faire vérifier par le code ce qu'une IA produit, et automatiser les tests",
+]
+
 // Chiffres de Quai Nord, à UN seul endroit (ils grandissent chaque nuit).
 export const quaiNord = {
   passages: '775 550',

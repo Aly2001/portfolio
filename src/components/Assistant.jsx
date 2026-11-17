@@ -42,7 +42,7 @@ function TexteAvecLiens({ texte }) {
     const href = propre.includes('@') ? `mailto:${propre}` : (propre.startsWith('http') ? propre : `https://${propre}`)
     return (
       <span key={i}>
-        <a href={href} target={propre.includes('@') ? undefined : '_blank'} rel="noopener noreferrer">{propre}</a>{reste}
+        <a className="annonce__lien" href={href} target={propre.includes('@') ? undefined : '_blank'} rel="noopener noreferrer">{propre}</a>{reste}
       </span>
     )
   })

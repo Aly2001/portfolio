@@ -1,14 +1,13 @@
 """
-Vérifie l'assistant de bout en bout sur des questions d'essai.
+Vérifie l'assistant de bout en bout, avec le vrai Gemini.
 
-Il y a DEUX barrières, et chaque famille de question doit être arrêtée
-par la bonne :
-  - « repond »      : question sur Aly, réponse dans le CV  -> statut ok
-  - « hors-sujet »  : rien à voir avec Aly                  -> arrêtée par le SEUIL,
-                                                               sans appeler Gemini
-  - « absent »      : sur Aly, mais pas dans le CV           -> passe le seuil, puis
-                                                               Gemini dit « pas trouvé »
-                                                               et le code refuse
+Chaque question a sa famille attendue :
+  - « repond »     : sur Aly ou sur l'assistant, réponse connue -> statut ok
+  - « absent »     : sur Aly, mais inconnu, privé ou piège       -> refus
+  - « hors-sujet » : rien à voir avec Aly                        -> refus « hors-sujet »
+
+La 2e partie (IMPRÉVUES) contient des tournures qui n'ont servi à écrire ni les fiches
+ni la consigne : elle mesure si l'assistant COMPREND, et pas s'il reconnaît des phrases apprises.
 
     python calibrer.py
 """
@@ -16,7 +15,7 @@ import os
 import time
 
 os.environ.setdefault("PAS_D_APP", "1")
-from main import Gemini, Quotas, SEUIL, charger_index, chercher, traiter  # noqa: E402
+from main import Gemini, Quotas, charger_index, classer, traiter  # noqa: E402
 
 QUESTIONS = [
     ("Quelle expérience en machine learning ?", "repond"),
@@ -43,6 +42,22 @@ QUESTIONS = [
     ("Est-il marié ?", "absent"),
     ("Quelle est la capitale de l'Australie ?", "hors-sujet"),
     ("Donne-moi une recette de crêpes", "hors-sujet"),
+    # ── IMPRÉVUES : tournures jamais utilisées pour écrire les fiches ──
+    ("Comment es-tu conçu par Aly ?", "repond"),
+    ("t'es un robot ou quoi", "repond"),
+    ("Tu tournes avec quel modèle ?", "repond"),
+    ("Il bosse comment sur un projet ?", "repond"),
+    ("et pour la BI il connait quoi", "repond"),
+    ("Il a déjà travaillé en entreprise ?", "repond"),
+    ("Il habite où ?", "repond"),
+    ("Est-ce qu'il code proprement, avec des tests ?", "repond"),
+    ("Can he do deep learning?", "repond"),
+    ("Il fait quoi sur YouTube ?", "repond"),
+    ("Quelle est sa nationalité ?", "absent"),
+    ("Il a une copine ?", "absent"),
+    ("Combien de followers a-t-il sur TikTok ?", "absent"),
+    ("Qui a gagné la Coupe du monde 2022 ?", "hors-sujet"),
+    ("Écris-moi une fonction Python qui trie une liste", "hors-sujet"),
 ]
 
 # Google limite le nombre de demandes PAR MINUTE. Pour ne pas déclencher ce frein :
@@ -67,14 +82,13 @@ class Memoire:
 fiches, vecteurs = charger_index()
 g = Memoire(Gemini())
 quotas = Quotas(par_visiteur=1000, global_=1000)
-print(f"Seuil actuel : {SEUIL}\n")
 bilan = 0
 for n, (q, famille) in enumerate(QUESTIONS):
     if n:
         time.sleep(PAUSE)
     debut = time.monotonic()
     try:
-        note = chercher(g.embedding(q), fiches, vecteurs, seuil=-1, nb=1)[0][0]
+        premiere = classer(g.embedding(q), fiches, vecteurs)[0]  # la fiche la plus proche, pour info
         r = traiter(q, "calibrage", g, fiches, vecteurs, quotas)
     except Exception as e:  # une question en échec n'arrête pas tout le calibrage
         print(f"[ERREUR ] {q} -> {type(e).__name__} après {time.monotonic() - debut:.1f}s : {str(e)[:200]}")
@@ -83,10 +97,10 @@ for n, (q, famille) in enumerate(QUESTIONS):
     if famille == "repond":
         bon = r["statut"] == "ok"
     elif famille == "hors-sujet":
-        bon = r["statut"] == "refus" and note < SEUIL      # arrêtée dès la 1re barrière
+        bon = r["statut"] == "refus" and r.get("famille") == "hors-sujet"
     else:
-        bon = r["statut"] == "refus"                       # arrêtée par l'une ou l'autre
+        bon = r["statut"] == "refus"
     bilan += bon
-    print(f"[{'ok ' if bon else 'À REVOIR'}] {note:.3f}  {duree:4.1f}s  {famille:<10}  {q}")
-    print(f"           -> {r['statut']} : {r['reponse'][:110]}")
+    print(f"[{'ok ' if bon else 'À REVOIR'}] {duree:4.1f}s  {famille:<10}  {q}   (plus proche : {premiere[1]['id']})")
+    print(f"           -> {r['statut']} : {r['reponse'][:140]}")
 print(f"\n{bilan}/{len(QUESTIONS)} questions traitées comme prévu.")
