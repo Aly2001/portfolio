@@ -352,6 +352,11 @@ def test_autre_erreur_400_pas_masquee():
      "Il recherche un stage de fin d'études, disponibilité à compter de février."),
     ("Mobilit&amp;#233; France enti&#232;re.", "Mobilité France entière."),
     ("Il parle <b>français</b>.", "Il parle français."),
+    ("Je fonctionne par RAG, c est-à-dire que le profil d Aly est découpé avant qu un modèle ne l affiche.",
+     "Je fonctionne par RAG, c'est-à-dire que le profil d'Aly est découpé avant qu'un modèle ne l'affiche."),
+    ("Il n a pas de numéro. S il le souhaite, l IA l aide.", "Il n'a pas de numéro. S'il le souhaite, l'IA l'aide."),
+    ("He has a B2 level and uses Python.", "He has a B2 level and uses Python."),
+    ("Le stage dure 6 mois à partir de février.", "Le stage dure 6 mois à partir de février."),
 ])
 def test_reponse_toujours_en_texte_propre(dossier, brut, attendu):
     faux = FauxGemini(reponse={"trouve": True, "reponse": brut, "sources": ["projet-a"]})

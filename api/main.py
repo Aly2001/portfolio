@@ -148,7 +148,7 @@ Tu connais Aly grâce aux FICHES fournies, classées de la plus à la moins util
    indirecte, en anglais, ou très courte (« et ses certificats ? »). « Il », « lui » ou « Aly »
    désignent Aly Keita ; « tu » ou « vous » désignent toi, l'assistant (une fiche te décrit).
 2. Classe-la, puis remplis "trouve" et "hors_sujet" :
-   - Elle concerne Aly (profil, parcours, compétences, projets, méthode, disponibilité, contact,
+   - Elle concerne Aly (parcours, compétences, projets, méthode, disponibilité, contact,
      liens, centres d'intérêt) ou toi, l'assistant, ET les fiches permettent d'y répondre :
      trouve = true, hors_sujet = false. Raisonne à partir des faits des fiches pour une question
      indirecte (« Est-il à l'aise avec Python ? », « Pourquoi le recruter ? », « Comment es-tu
@@ -161,7 +161,9 @@ Tu connais Aly grâce aux FICHES fournies, classées de la plus à la moins util
 3. Écris la réponse :
 - Uniquement avec les informations des fiches. N'invente rien, ne déduis aucun fait nouveau.
 - Parle d'Aly à la troisième personne, en 2 à 4 phrases, dans la langue de la question.
-  Quand on te demande comment tu fonctionnes, parle de toi à la première personne.
+  Quand on te demande qui tu es ou comment tu fonctionnes, donne TELLE QUELLE la présentation
+  de la fiche « assistant », sans aucun détail technique. Les détails techniques seulement si la
+  question les demande explicitement (technologie, modèle, architecture), en deux phrases simples.
 - Texte brut, avec les vrais caractères accentués (é, è, à) : jamais de code HTML ni d'entités
   comme « &#233; », aucune mise en forme.
 - Ton professionnel, courtois et sobre : vouvoiement, aucune familiarité, aucune exclamation,
@@ -375,6 +377,9 @@ ATTRIBUTION_PARENTHESE = re.compile(
 )
 
 
+ELISION_PERDUE = re.compile(r"(?<![\w'’-])((?:[cdjlmnstCDJLMNST]|[Qq]u|[Jj]usqu|[Ll]orsqu|[Pp]uisqu))\s+(?=[aeiouyhâàéèêëîïôûœAEIOUYHÂÀÉÈÊÎÔÛ])")
+
+
 def texte_propre(texte: str) -> str:
     """Remet en texte normal ce que l'IA renvoie parfois codé pour le web :
     « disponibilit&#233; » devient « disponibilité », « d''études » devient « d'études ».
@@ -383,6 +388,9 @@ def texte_propre(texte: str) -> str:
         texte = html.unescape(texte)
     texte = re.sub(r"<[^>]{1,40}>", "", texte)       # aucune balise HTML
     texte = re.sub(r"(['’])\1+", r"\1", texte)      # apostrophes doublées
+    # Apostrophes perdues (« c est », « d Aly », « qu un ») : en français, ces lettres ne sont
+    # jamais des mots seuls. Suivies d'une voyelle ou d'un h, c'est forcément une élision.
+    texte = ELISION_PERDUE.sub(lambda m: m.group(1) + "'", texte)
     return " ".join(texte.split())
 
 
@@ -469,7 +477,7 @@ POLITESSES = {
                 "a la prochaine"},
                "Merci de votre visite. Pour toute proposition ou tout échange, vous pouvez contacter Aly directement par e-mail."),
     "merci": ({"merci", "thanks", "thank you", "merci beaucoup", "merci bien", "mrc", "je vous remercie"},
-              "Je vous en prie. Avez-vous une autre question sur le profil d'Aly ? Par exemple :"),
+              "Je vous en prie. Avez-vous une autre question sur le parcours ou les projets d'Aly ? Par exemple :"),
     "accord": ({"ok", "okay", "d accord", "dac", "super", "parfait", "genial", "top", "cool", "tres bien",
                 "entendu", "compris", "tres interessant", "interessant"},
                "Très bien. Souhaitez-vous en savoir davantage ? Par exemple :"),

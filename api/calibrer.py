@@ -44,6 +44,8 @@ QUESTIONS = [
     ("Donne-moi une recette de crêpes", "hors-sujet"),
     # ── IMPRÉVUES : tournures jamais utilisées pour écrire les fiches ──
     ("Comment es-tu conçu par Aly ?", "repond"),
+    ("Comment tu arrives à bien répondre aux questions ?", "repond"),
+    ("Quelle architecture technique utilises-tu ?", "repond"),
     ("t'es un robot ou quoi", "repond"),
     ("Tu tournes avec quel modèle ?", "repond"),
     ("Il bosse comment sur un projet ?", "repond"),

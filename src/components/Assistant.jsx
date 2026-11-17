@@ -32,7 +32,7 @@ function avecSuggestions(m) {
 }
 
 // Rend cliquables les adresses web et e-mail d'une réponse. Le serveur a déjà vérifié
-// que chaque lien figure dans le profil d'Aly : aucune adresse inconnue n'arrive ici.
+// que chaque lien figure dans les informations sur Aly : aucune adresse inconnue n'arrive ici.
 const MOTIF_LIEN = /([\w.+-]+@[\w-]+\.[\w.]+|(?:https?:\/\/)?(?:[a-z0-9-]+\.)+(?:com|fr|app|io|net|org|dev|me|ai)(?:\/[^\s),;]*)?)/gi
 function TexteAvecLiens({ texte }) {
   return texte.split(MOTIF_LIEN).map((morceau, i) => {

@@ -48,8 +48,9 @@ ajouter('formations-complementaires', { libelle: 'Parcours', sous: 'Parcours', a
 
 // L'assistant lui-même : « Comment es-tu conçu ? », « Es-tu une IA ? », « Sur quoi te bases-tu ? ».
 ajouter('assistant', { libelle: 'Assistant IA', sous: 'Accueil', ancre: '#accueil' },
-  `L'assistant IA de ce portfolio (celui qui répond aux visiteurs) a été ${assistant.concepteur}. ` +
-  `Principe : ${assistant.principe}. Technique : ${assistant.technique}. Contrôles : ${assistant.controles}. ` +
+  `L'assistant IA de ce portfolio (celui qui répond aux visiteurs). ` +
+  `Présentation à donner telle quelle, à la première personne, quand on demande qui il est ou comment il fonctionne : « ${assistant.presentation} » ` +
+  `Détails techniques, à donner SEULEMENT si on les demande explicitement, en deux phrases simples : ${assistant.technique}. ` +
   `Limites : ${assistant.limites}.`)
 
 ajouter('methode', { libelle: 'Présentation', sous: 'Accueil', ancre: '#accueil' },

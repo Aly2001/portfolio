@@ -43,16 +43,15 @@ export const formations = ['Formation Power BI, Santander Open Academy (terminé
 export const interets = ["Vulgarisation de l'IA : vidéos TikTok et chaîne YouTube « Après l'Humain »"]
 
 // L'assistant du portfolio, tel qu'il se présente quand on l'interroge sur lui-même
-// (assistant seulement). Uniquement des faits vérifiables dans le code de l'API.
+// (assistant seulement). « presentation » = la réponse courte, validée par Aly, donnée par défaut ;
+// « technique » = les détails, donnés SEULEMENT si on les demande. Que des faits vérifiables.
 export const assistant = {
-  concepteur: 'conçu et développé par Aly Keita lui-même ; c\'est l\'un de ses projets d\'IA générative',
-  principe:
-    "il fonctionne par RAG (génération augmentée par récupération) : le profil d'Aly est découpé en fiches, transformées en vecteurs par un modèle d'embedding Gemini ; à chaque question, les fiches sont classées par proximité de sens, puis un modèle Gemini rédige la réponse uniquement à partir d'elles",
-  technique: "une API en Python (FastAPI) déployée sur Google Cloud Run, appelée par le site en React",
-  controles:
-    "le code vérifie chaque réponse avant de l'afficher : les liens inventés et les numéros de téléphone sont bloqués, les tentatives de détournement sont refusées, le nombre de questions par jour est limité et l'adresse IP n'est jamais conservée en clair ; des tests automatisés contrôlent ces règles",
+  presentation:
+    "Je suis l'assistant IA de ce portfolio, conçu et développé par Aly Keita. Je réponds uniquement à partir des informations sur son parcours, ses compétences et ses projets, et chaque réponse est vérifiée avant d'être affichée. Si vous souhaitez connaître les détails techniques de ma conception, n'hésitez pas à me le demander.",
+  technique:
+    "c'est un RAG (génération augmentée par récupération) : les informations sur Aly sont rangées en fiches, un modèle Gemini rédige la réponse à partir des fiches les plus proches de la question, puis le code vérifie la réponse (liens inventés et numéros de téléphone bloqués, nombre de questions limité). L'ensemble est une API en Python (FastAPI) sur Google Cloud Run, appelée par le site en React",
   limites:
-    "il ne connaît que le profil professionnel d'Aly, traite chaque question séparément sans garder l'historique de la conversation, et ne peut pas vérifier l'identité de la personne qui lui écrit",
+    "il ne connaît que le parcours, les compétences et les projets d'Aly, traite chaque question séparément et ne peut pas vérifier l'identité de la personne qui lui écrit",
 }
 
 // Sa façon de travailler (assistant seulement), tirée de ses projets.
