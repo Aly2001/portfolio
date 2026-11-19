@@ -60,6 +60,10 @@ QUESTIONS = [
     ("Combien de followers a-t-il sur TikTok ?", "absent"),
     ("Qui a gagné la Coupe du monde 2022 ?", "hors-sujet"),
     ("Écris-moi une fonction Python qui trie une liste", "hors-sujet"),
+    # ── SUITES DE CONVERSATION : la question ne se comprend qu'avec la précédente ──
+    ("Tu le connais ?", "repond", ["Tu connais Aly ?"]),
+    ("Et les outils utilisés ?", "repond", ["Parle-moi du projet Quai Nord"]),
+    ("Et en anglais, il a quel niveau ?", "repond", ["Quelles langues parle-t-il ?"]),
 ]
 
 # Google limite le nombre de demandes PAR MINUTE. Pour ne pas déclencher ce frein :
@@ -77,21 +81,21 @@ class Memoire:
             self.deja[texte] = self.moteur.embedding(texte)
         return self.deja[texte]
 
-    def repondre(self, question, fiches, langue="fr"):
-        return self.moteur.repondre(question, fiches, langue)
+    def repondre(self, question, fiches, langue="fr", memoire=()):
+        return self.moteur.repondre(question, fiches, langue, memoire)
 
 
 fiches, vecteurs = charger_index()
 g = Memoire(Gemini())
 quotas = Quotas(par_visiteur=1000, global_=1000)
 bilan = 0
-for n, (q, famille) in enumerate(QUESTIONS):
+for n, (q, famille, *avant) in enumerate(QUESTIONS):
     if n:
         time.sleep(PAUSE)
     debut = time.monotonic()
     try:
         premiere = classer(g.embedding(q), fiches, vecteurs)[0]  # la fiche la plus proche, pour info
-        r = traiter(q, "calibrage", g, fiches, vecteurs, quotas)
+        r = traiter(q, "calibrage", g, fiches, vecteurs, quotas, "fr", avant[0] if avant else ())
     except Exception as e:  # une question en échec n'arrête pas tout le calibrage
         print(f"[ERREUR ] {q} -> {type(e).__name__} après {time.monotonic() - debut:.1f}s : {str(e)[:200]}")
         continue

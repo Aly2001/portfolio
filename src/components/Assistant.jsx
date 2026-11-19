@@ -125,6 +125,8 @@ export default function Assistant() {
     const q = question.trim()
     if (!q || attente || bloque) return
     setSaisie('')
+    // Mémoire courte : les 2 dernières questions du visiteur, pour comprendre « et ses projets ? »
+    const precedentes = messages.filter((m) => m.de === 'visiteur').slice(-2).map((m) => m.texte)
     setMessages((m) => [...m, { de: 'visiteur', texte: q }])
     setAttente(true)
     let r
@@ -134,7 +136,7 @@ export default function Assistant() {
       const rep = await fetch(`${ASSISTANT_URL}/question`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ question: q, langue: LANGUE }),
+        body: JSON.stringify({ question: q, langue: LANGUE, precedentes }),
         signal: arret.signal,
       })
       r = await rep.json()
